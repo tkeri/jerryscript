@@ -1722,8 +1722,8 @@ parser_parse_statements (parser_context_t *context_p) /**< context */
     }
   }
 
-  if (context_p->status_flags & PARSER_IS_STRICT
-      && context_p->status_flags & PARSER_HAS_NON_STRICT_ARG)
+  if (unlikely(context_p->status_flags & PARSER_IS_STRICT
+      && context_p->status_flags & PARSER_HAS_NON_STRICT_ARG))
   {
     parser_raise_error (context_p, PARSER_ERR_NON_STRICT_ARG_DEFINITION);
   }
@@ -1967,7 +1967,7 @@ parser_parse_statements (parser_context_t *context_p) /**< context */
           options = PARSE_EXPR_STATEMENT;
         }
 
-        if (context_p->token.type == LEXER_EXPRESSION_START)
+        if (unlikely(context_p->token.type == LEXER_EXPRESSION_START))
         {
           /* Restore the token type form the extra_value. */
           context_p->token.type = context_p->token.extra_value;
@@ -2036,8 +2036,8 @@ parser_parse_statements (parser_context_t *context_p) /**< context */
     {
       lexer_next_token (context_p);
     }
-    else if (context_p->token.type != LEXER_EOS
-             && !(context_p->token.flags & LEXER_WAS_NEWLINE))
+    else if (unlikely(context_p->token.type != LEXER_EOS
+             && !(context_p->token.flags & LEXER_WAS_NEWLINE)))
     {
       parser_raise_error (context_p, PARSER_ERR_SEMICOLON_EXPECTED);
     }
@@ -2151,7 +2151,7 @@ parser_parse_statements (parser_context_t *context_p) /**< context */
   parser_stack_pop_uint8 (context_p);
   context_p->last_statement.current_p = NULL;
 
-  if (context_p->status_flags & PARSER_IS_CLOSURE)
+  if (unlikely(context_p->status_flags & PARSER_IS_CLOSURE))
   {
     parser_raise_error (context_p, PARSER_ERR_STATEMENT_EXPECTED);
   }

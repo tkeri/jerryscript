@@ -42,7 +42,7 @@ parser_malloc (parser_context_t *context_p, /**< context */
   JERRY_ASSERT (size > 0);
   result = jmem_heap_alloc_block_null_on_error (size);
 
-  if (result == NULL)
+  if (unlikely(result == NULL))
   {
     parser_raise_error (context_p, PARSER_ERR_OUT_OF_MEMORY);
   }
@@ -397,7 +397,7 @@ parser_stack_pop_uint8 (parser_context_t *context_p) /**< context */
 
   context_p->stack.last_position--;
 
-  if (context_p->stack.last_position == 0)
+  if (unlikely(context_p->stack.last_position == 0))
   {
     context_p->stack.first_p = page_p->next_p;
     context_p->stack.last_position = PARSER_STACK_PAGE_SIZE;

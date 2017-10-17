@@ -41,7 +41,7 @@ parser_emit_two_bytes (parser_context_t *context_p, /**< context */
 {
   uint32_t last_position = context_p->byte_code.last_position;
 
-  if (last_position + 2 <= PARSER_CBC_STREAM_PAGE_SIZE)
+  if (likely(last_position + 2 <= PARSER_CBC_STREAM_PAGE_SIZE))
   {
     parser_mem_page_t *page_p = context_p->byte_code.last_p;
 
@@ -90,7 +90,7 @@ parser_flush_cbc (parser_context_t *context_p) /**< context */
 
   context_p->status_flags |= PARSER_NO_END_LABEL;
 
-  if (PARSER_IS_BASIC_OPCODE (context_p->last_cbc_opcode))
+  if (likely(PARSER_IS_BASIC_OPCODE (context_p->last_cbc_opcode)))
   {
     cbc_opcode_t opcode = (cbc_opcode_t) context_p->last_cbc_opcode;
 
@@ -213,7 +213,7 @@ parser_flush_cbc (parser_context_t *context_p) /**< context */
   if (context_p->stack_depth > context_p->stack_limit)
   {
     context_p->stack_limit = context_p->stack_depth;
-    if (context_p->stack_limit > PARSER_MAXIMUM_STACK_LIMIT)
+    if (unlikely(context_p->stack_limit > PARSER_MAXIMUM_STACK_LIMIT))
     {
       parser_raise_error (context_p, PARSER_ERR_STACK_LIMIT_REACHED);
     }

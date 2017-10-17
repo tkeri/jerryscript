@@ -186,7 +186,7 @@ parser_compute_indicies (parser_context_t *context_p, /**< context */
       {
         size_t bytes_to_end = (size_t) (context_p->source_end_p - char_p);
 
-        if (bytes_to_end < 0xfffff)
+        if (likely(bytes_to_end < 0xfffff))
         {
           literal_p->u.source_data = ((uint32_t) bytes_to_end) | (((uint32_t) literal_p->prop.length) << 20);
           literal_p->status_flags |= LEXER_FLAG_LATE_INIT;
@@ -305,7 +305,7 @@ parser_compute_indicies (parser_context_t *context_p, /**< context */
     }
   }
 
-  if (context_p->literal_count <= CBC_MAXIMUM_SMALL_VALUE)
+  if (likely(context_p->literal_count <= CBC_MAXIMUM_SMALL_VALUE))
   {
     literal_one_byte_limit = CBC_MAXIMUM_BYTE_VALUE - 1;
   }
@@ -1388,7 +1388,7 @@ parser_post_processing (parser_context_t *context_p) /**< context */
   jmem_cpointer_t *literal_pool_p;
   uint8_t *dst_p;
 
-  if ((size_t) context_p->stack_limit + (size_t) context_p->register_count > PARSER_MAXIMUM_STACK_LIMIT)
+  if (unlikely((size_t) context_p->stack_limit + (size_t) context_p->register_count > PARSER_MAXIMUM_STACK_LIMIT))
   {
     parser_raise_error (context_p, PARSER_ERR_STACK_LIMIT_REACHED);
   }
@@ -1425,7 +1425,7 @@ parser_post_processing (parser_context_t *context_p) /**< context */
                                                  &const_literal_end);
   length = initializers_length;
 
-  if (context_p->literal_count <= CBC_MAXIMUM_SMALL_VALUE)
+  if (likely(context_p->literal_count <= CBC_MAXIMUM_SMALL_VALUE))
   {
     literal_one_byte_limit = CBC_MAXIMUM_BYTE_VALUE - 1;
   }
@@ -1482,7 +1482,7 @@ parser_post_processing (parser_context_t *context_p) /**< context */
       literal_index |= ((size_t) page_p->bytes[offset]) << 8;
       literal_p = PARSER_GET_LITERAL (literal_index);
 
-      if (literal_p->type == LEXER_UNUSED_LITERAL)
+      if (unlikely(literal_p->type == LEXER_UNUSED_LITERAL))
       {
         /* In a few cases uninitialized literals may have been converted to initialized
          * literals later. Byte code references to the old (uninitialized) literals
@@ -1492,7 +1492,7 @@ parser_post_processing (parser_context_t *context_p) /**< context */
         JERRY_ASSERT (literal_p != NULL && literal_p->type != LEXER_UNUSED_LITERAL);
       }
 
-      if (literal_p->prop.index <= literal_one_byte_limit)
+      if (likely(literal_p->prop.index <= literal_one_byte_limit))
       {
         *first_byte = (uint8_t) literal_p->prop.index;
       }
@@ -1601,9 +1601,9 @@ parser_post_processing (parser_context_t *context_p) /**< context */
   needs_uint16_arguments = false;
   total_size = sizeof (cbc_uint8_arguments_t);
 
-  if (context_p->stack_limit > CBC_MAXIMUM_BYTE_VALUE
+  if (unlikely(context_p->stack_limit > CBC_MAXIMUM_BYTE_VALUE
       || context_p->register_count > CBC_MAXIMUM_BYTE_VALUE
-      || context_p->literal_count > CBC_MAXIMUM_BYTE_VALUE)
+      || context_p->literal_count > CBC_MAXIMUM_BYTE_VALUE))
   {
     needs_uint16_arguments = true;
     total_size = sizeof (cbc_uint16_arguments_t);
@@ -1623,7 +1623,7 @@ parser_post_processing (parser_context_t *context_p) /**< context */
   compiled_code_p->refs = 1;
   compiled_code_p->status_flags = CBC_CODE_FLAGS_FUNCTION;
 
-  if (needs_uint16_arguments)
+  if (unlikely(needs_uint16_arguments))
   {
     cbc_uint16_arguments_t *args_p = (cbc_uint16_arguments_t *) compiled_code_p;
 
@@ -1651,12 +1651,12 @@ parser_post_processing (parser_context_t *context_p) /**< context */
     byte_code_p += sizeof (cbc_uint8_arguments_t);
   }
 
-  if (context_p->literal_count > CBC_MAXIMUM_SMALL_VALUE)
+  if (unlikely(context_p->literal_count > CBC_MAXIMUM_SMALL_VALUE))
   {
     compiled_code_p->status_flags |= CBC_CODE_FLAGS_FULL_LITERAL_ENCODING;
   }
 
-  if (context_p->status_flags & PARSER_IS_STRICT)
+  if (unlikely(context_p->status_flags & PARSER_IS_STRICT))
   {
     compiled_code_p->status_flags |= CBC_CODE_FLAGS_STRICT_MODE;
   }
@@ -1710,7 +1710,7 @@ parser_post_processing (parser_context_t *context_p) /**< context */
     opcode = (cbc_opcode_t) (*branch_mark_p);
     branch_offset_length = CBC_BRANCH_OFFSET_LENGTH (opcode);
 
-    if (opcode == CBC_JUMP_FORWARD)
+    if (unlikely(opcode == CBC_JUMP_FORWARD))
     {
       /* These opcodes are deleted from the stream. */
 #if PARSER_MAXIMUM_CODE_SIZE <= 65535
@@ -1774,7 +1774,7 @@ parser_post_processing (parser_context_t *context_p) /**< context */
       real_offset++;
       PARSER_NEXT_BYTE_UPDATE (page_p, offset, real_offset);
 
-      if (first_byte > literal_one_byte_limit)
+      if (unlikely(first_byte > literal_one_byte_limit))
       {
         *dst_p++ = page_p->bytes[offset];
         real_offset++;
@@ -1878,7 +1878,7 @@ parser_post_processing (parser_context_t *context_p) /**< context */
     }
   }
 #else /* !PARSER_DUMP_BYTE_CODE */
-  if (context_p->status_flags & PARSER_HAS_LATE_LIT_INIT)
+  if (unlikely(context_p->status_flags & PARSER_HAS_LATE_LIT_INIT))
   {
     parser_list_iterator_t literal_iterator;
     lexer_literal_t *literal_p;
@@ -1942,7 +1942,7 @@ parser_post_processing (parser_context_t *context_p) /**< context */
     }
   }
 
-  if (context_p->status_flags & PARSER_NAMED_FUNCTION_EXP)
+  if (unlikely(context_p->status_flags & PARSER_NAMED_FUNCTION_EXP))
   {
     ECMA_SET_NON_NULL_POINTER (literal_pool_p[const_literal_end],
                                compiled_code_p);
@@ -2103,12 +2103,12 @@ parser_parse_source (const uint8_t *arg_list_p, /**< function argument list */
   context.error = PARSER_ERR_NO_ERROR;
   context.allocated_buffer_p = NULL;
 
-  if (error_location_p != NULL)
+  if (likely(error_location_p != NULL))
   {
     error_location_p->error = PARSER_ERR_NO_ERROR;
   }
 
-  if (arg_list_p == NULL)
+  if (likely(arg_list_p == NULL))
   {
     context.status_flags = PARSER_NO_REG_STORE | PARSER_LEXICAL_ENV_NEEDED | PARSER_ARGUMENTS_NOT_NEEDED;
     context.source_p = source_p;
@@ -2126,7 +2126,7 @@ parser_parse_source (const uint8_t *arg_list_p, /**< function argument list */
   context.last_context_p = NULL;
   context.last_statement.current_p = NULL;
 
-  if (strict_mode)
+  if (unlikely(strict_mode))
   {
     context.status_flags |= PARSER_IS_STRICT;
   }
@@ -2708,7 +2708,7 @@ parser_parse_script (const uint8_t *arg_list_p, /**< function argument list */
                                           is_strict,
                                           &parser_error);
 
-  if (!*bytecode_data_p)
+  if (unlikely(!*bytecode_data_p))
   {
 #ifdef JERRY_DEBUGGER
     if (JERRY_CONTEXT (debugger_flags) & JERRY_DEBUGGER_CONNECTED)

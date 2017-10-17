@@ -588,7 +588,7 @@ parser_scan_until (parser_context_t *context_p, /**< context */
     lexer_token_type_t type = (lexer_token_type_t) context_p->token.type;
     scan_stack_modes_t stack_top = (scan_stack_modes_t) context_p->stack_top_uint8;
 
-    if (type == LEXER_EOS)
+    if (unlikely(type == LEXER_EOS))
     {
       parser_raise_error (context_p, PARSER_ERR_EXPRESSION_EXPECTED);
     }
