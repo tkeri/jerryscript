@@ -123,7 +123,7 @@ ecma_op_object_get_own_property (ecma_object_t *object_p, /**< the object */
     }
     case ECMA_OBJECT_TYPE_ARRAY:
     {
-      if (ecma_string_is_length (property_name_p))
+      if (unlikely(ecma_string_is_length (property_name_p)))
       {
         ecma_extended_object_t *ext_object_p = (ecma_extended_object_t *) object_p;
 
@@ -193,7 +193,7 @@ ecma_op_object_get_own_property (ecma_object_t *object_p, /**< the object */
     {
       property_p = ecma_builtin_try_to_instantiate_property (object_p, property_name_p);
     }
-    else if (ecma_is_normal_or_arrow_function (type))
+    else if (unlikely(ecma_is_normal_or_arrow_function (type)))
     {
       if (ecma_string_is_length (property_name_p))
       {
@@ -242,22 +242,22 @@ ecma_op_object_get_own_property (ecma_object_t *object_p, /**< the object */
       /* Get prototype physical property. */
       property_p = ecma_op_function_try_to_lazy_instantiate_property (object_p, property_name_p);
     }
-    else if (type == ECMA_OBJECT_TYPE_EXTERNAL_FUNCTION)
+    else if (unlikely(type == ECMA_OBJECT_TYPE_EXTERNAL_FUNCTION))
     {
       property_p = ecma_op_external_function_try_to_lazy_instantiate_property (object_p, property_name_p);
     }
-    else if (type == ECMA_OBJECT_TYPE_BOUND_FUNCTION)
+    else if (unlikely(type == ECMA_OBJECT_TYPE_BOUND_FUNCTION))
     {
       property_p = ecma_op_bound_function_try_to_lazy_instantiate_property (object_p, property_name_p);
     }
 
-    if (property_p == NULL)
+    if (likely(property_p == NULL))
     {
       return ECMA_PROPERTY_TYPE_NOT_FOUND;
     }
   }
-  else if (type == ECMA_OBJECT_TYPE_PSEUDO_ARRAY
-           && property_ref_p != NULL)
+  else if (unlikely(type == ECMA_OBJECT_TYPE_PSEUDO_ARRAY
+           && property_ref_p != NULL))
   {
     ecma_extended_object_t *ext_object_p = (ecma_extended_object_t *) object_p;
 
@@ -294,12 +294,12 @@ ecma_op_object_get_own_property (ecma_object_t *object_p, /**< the object */
     }
   }
 
-  if (options & ECMA_PROPERTY_GET_EXT_REFERENCE)
+  if (unlikely(options & ECMA_PROPERTY_GET_EXT_REFERENCE))
   {
     ((ecma_extended_property_ref_t *) property_ref_p)->property_p = property_p;
   }
 
-  if (property_ref_p != NULL)
+  if (unlikely(property_ref_p != NULL))
   {
     property_ref_p->value_p = ECMA_PROPERTY_VALUE_PTR (property_p);
   }
@@ -337,7 +337,7 @@ ecma_op_object_get_property (ecma_object_t *object_p, /**< the object */
       return property;
     }
 
-    if (--max_depth == 0 || property == ECMA_PROPERTY_TYPE_NOT_FOUND_AND_STOP)
+    if (unlikely(--max_depth == 0 || property == ECMA_PROPERTY_TYPE_NOT_FOUND_AND_STOP))
     {
       break;
     }
@@ -430,7 +430,7 @@ ecma_op_object_find_own (ecma_value_t base_value, /**< base value */
 
           ecma_string_t *prim_value_str_p = ecma_get_string_from_value (prim_value_p);
 
-          if (index < ecma_string_get_length (prim_value_str_p))
+          if (likely(index < ecma_string_get_length (prim_value_str_p)))
           {
             ecma_char_t char_at_idx = ecma_string_get_char_at_pos (prim_value_str_p, index);
             return ecma_make_string_value (ecma_new_ecma_string_from_code_unit (char_at_idx));
@@ -563,11 +563,11 @@ ecma_op_object_find_own (ecma_value_t base_value, /**< base value */
       /* Get prototype physical property. */
       property_p = ecma_op_function_try_to_lazy_instantiate_property (object_p, property_name_p);
     }
-    else if (type == ECMA_OBJECT_TYPE_EXTERNAL_FUNCTION)
+    else if (unlikely(type == ECMA_OBJECT_TYPE_EXTERNAL_FUNCTION))
     {
       property_p = ecma_op_external_function_try_to_lazy_instantiate_property (object_p, property_name_p);
     }
-    else if (type == ECMA_OBJECT_TYPE_BOUND_FUNCTION)
+    else if (unlikely(type == ECMA_OBJECT_TYPE_BOUND_FUNCTION))
     {
       property_p = ecma_op_bound_function_try_to_lazy_instantiate_property (object_p, property_name_p);
     }
@@ -580,7 +580,7 @@ ecma_op_object_find_own (ecma_value_t base_value, /**< base value */
 
   ecma_property_value_t *prop_value_p = ECMA_PROPERTY_VALUE_PTR (property_p);
 
-  if (ECMA_PROPERTY_GET_TYPE (*property_p) == ECMA_PROPERTY_TYPE_NAMEDDATA)
+  if (likely(ECMA_PROPERTY_GET_TYPE (*property_p) == ECMA_PROPERTY_TYPE_NAMEDDATA))
   {
     return ecma_fast_copy_value (prop_value_p->value);
   }
@@ -618,7 +618,7 @@ ecma_op_object_find (ecma_object_t *object_p, /**< the object */
   {
     ecma_value_t value = ecma_op_object_find_own (base_value, object_p, property_name_p);
 
-    if (ecma_is_value_found (value))
+    if (likely(ecma_is_value_found (value)))
     {
       return value;
     }
@@ -691,7 +691,7 @@ ecma_op_object_get (ecma_object_t *object_p, /**< the object */
       return value;
     }
 
-    if (--max_depth == 0)
+    if (unlikely(--max_depth == 0))
     {
       break;
     }
@@ -738,7 +738,7 @@ ecma_op_object_put (ecma_object_t *object_p, /**< the object */
   {
     case ECMA_OBJECT_TYPE_ARRAY:
     {
-      if (ecma_string_is_length (property_name_p))
+      if (unlikely(ecma_string_is_length (property_name_p)))
       {
         ecma_extended_object_t *ext_object_p = (ecma_extended_object_t *) object_p;
 
@@ -848,7 +848,7 @@ ecma_op_object_put (ecma_object_t *object_p, /**< the object */
     {
       property_p = ecma_builtin_try_to_instantiate_property (object_p, property_name_p);
     }
-    else if (ecma_is_normal_or_arrow_function (type))
+    else if (unlikely(ecma_is_normal_or_arrow_function (type)))
     {
       if (ecma_string_is_length (property_name_p))
       {
@@ -858,21 +858,21 @@ ecma_op_object_put (ecma_object_t *object_p, /**< the object */
       /* Get prototype physical property. */
       property_p = ecma_op_function_try_to_lazy_instantiate_property (object_p, property_name_p);
     }
-    else if (type == ECMA_OBJECT_TYPE_EXTERNAL_FUNCTION)
+    else if (unlikely(type == ECMA_OBJECT_TYPE_EXTERNAL_FUNCTION))
     {
       property_p = ecma_op_external_function_try_to_lazy_instantiate_property (object_p, property_name_p);
     }
-    else if (type == ECMA_OBJECT_TYPE_BOUND_FUNCTION)
+    else if (unlikely(type == ECMA_OBJECT_TYPE_BOUND_FUNCTION))
     {
       property_p = ecma_op_bound_function_try_to_lazy_instantiate_property (object_p, property_name_p);
     }
   }
 
-  if (property_p != NULL)
+  if (likely(property_p != NULL))
   {
-    if (ECMA_PROPERTY_GET_TYPE (*property_p) == ECMA_PROPERTY_TYPE_NAMEDDATA)
+    if (likely(ECMA_PROPERTY_GET_TYPE (*property_p) == ECMA_PROPERTY_TYPE_NAMEDDATA))
     {
-      if (ecma_is_property_writable (*property_p))
+      if (likely(ecma_is_property_writable (*property_p)))
       {
         /* There is no need for special casing arrays here because changing the
          * value of an existing property never changes the length of an array. */
@@ -894,7 +894,7 @@ ecma_op_object_put (ecma_object_t *object_p, /**< the object */
     ecma_object_t *proto_p = ecma_get_object_prototype (object_p);
     bool create_new_property = true;
 
-    if (proto_p != NULL)
+    if (likely(proto_p != NULL))
     {
       ecma_property_ref_t property_ref = { NULL };
 
@@ -903,7 +903,7 @@ ecma_op_object_put (ecma_object_t *object_p, /**< the object */
                                                                         &property_ref,
                                                                         ECMA_PROPERTY_GET_NO_OPTIONS);
 
-      if (inherited_property != ECMA_PROPERTY_TYPE_NOT_FOUND)
+      if (unlikely(inherited_property != ECMA_PROPERTY_TYPE_NOT_FOUND))
       {
         if (ECMA_PROPERTY_GET_TYPE (inherited_property) == ECMA_PROPERTY_TYPE_NAMEDACCESSOR)
         {
@@ -917,12 +917,12 @@ ecma_op_object_put (ecma_object_t *object_p, /**< the object */
       }
     }
 
-    if (create_new_property
-        && ecma_get_object_extensible (object_p))
+    if (likely(create_new_property
+        && ecma_get_object_extensible (object_p)))
     {
       const ecma_object_type_t obj_type = ecma_get_object_type (object_p);
 
-      if (obj_type == ECMA_OBJECT_TYPE_PSEUDO_ARRAY)
+      if (unlikely(obj_type == ECMA_OBJECT_TYPE_PSEUDO_ARRAY))
       {
         ecma_extended_object_t *ext_object_p = (ecma_extended_object_t *) object_p;
 
@@ -948,7 +948,7 @@ ecma_op_object_put (ecma_object_t *object_p, /**< the object */
         if (index < UINT32_MAX
             && index >= ext_object_p->u.array.length)
         {
-          if (!ecma_is_property_writable (ext_object_p->u.array.length_prop))
+          if (unlikely(!ecma_is_property_writable (ext_object_p->u.array.length_prop)))
           {
             return ecma_reject (is_throw);
           }
@@ -1351,7 +1351,7 @@ ecma_op_object_get_property_names (ecma_object_t *obj_p, /**< object */
 
     ecma_collection_header_t *prop_names_p = ecma_new_strings_collection (NULL, 0);
 
-    if (obj_is_builtin)
+    if (unlikely(obj_is_builtin))
     {
       ecma_builtin_list_lazy_property_names (obj_p,
                                              is_enumerable_only,
@@ -1453,7 +1453,7 @@ ecma_op_object_get_property_names (ecma_object_t *obj_p, /**< object */
 
     ecma_property_header_t *prop_iter_p = ecma_get_property_list (prototype_chain_iter_p);
 
-    if (prop_iter_p != NULL && prop_iter_p->types[0] == ECMA_PROPERTY_TYPE_HASHMAP)
+    if (unlikely(prop_iter_p != NULL && prop_iter_p->types[0] == ECMA_PROPERTY_TYPE_HASHMAP))
     {
       prop_iter_p = ECMA_GET_POINTER (ecma_property_header_t,
                                       prop_iter_p->next_property_cp);
@@ -1472,8 +1472,8 @@ ecma_op_object_get_property_names (ecma_object_t *obj_p, /**< object */
         {
           ecma_property_pair_t *prop_pair_p = (ecma_property_pair_t *) prop_iter_p;
 
-          if (ECMA_PROPERTY_GET_NAME_TYPE (*property_p) == ECMA_STRING_CONTAINER_MAGIC_STRING
-              && prop_pair_p->names_cp[i] >= LIT_NON_INTERNAL_MAGIC_STRING__COUNT)
+          if (unlikely(ECMA_PROPERTY_GET_NAME_TYPE (*property_p) == ECMA_STRING_CONTAINER_MAGIC_STRING
+              && prop_pair_p->names_cp[i] >= LIT_NON_INTERNAL_MAGIC_STRING__COUNT))
           {
             /* Internal properties are never enumerated. */
             continue;
@@ -1482,7 +1482,7 @@ ecma_op_object_get_property_names (ecma_object_t *obj_p, /**< object */
           ecma_string_t *name_p = ecma_string_from_property_name (*property_p,
                                                                   prop_pair_p->names_cp[i]);
 
-          if (!(is_enumerable_only && !ecma_is_property_enumerable (*property_p)))
+          if (likely(!(is_enumerable_only && !ecma_is_property_enumerable (*property_p))))
           {
             uint8_t hash = (uint8_t) name_p->hash;
             uint32_t bitmap_row = (uint32_t) (hash / bitmap_row_size);
@@ -1490,7 +1490,7 @@ ecma_op_object_get_property_names (ecma_object_t *obj_p, /**< object */
 
             bool is_add = true;
 
-            if ((own_names_hashes_bitmap[bitmap_row] & (1u << bitmap_column)) != 0)
+            if (unlikely((own_names_hashes_bitmap[bitmap_row] & (1u << bitmap_column)) != 0))
             {
               ecma_collection_iterator_init (&iter, prop_names_p);
 
@@ -1506,7 +1506,7 @@ ecma_op_object_get_property_names (ecma_object_t *obj_p, /**< object */
               }
             }
 
-            if (is_add)
+            if (likely(is_add))
             {
               own_names_hashes_bitmap[bitmap_row] |= (1u << bitmap_column);
 
@@ -1539,12 +1539,12 @@ ecma_op_object_get_property_names (ecma_object_t *obj_p, /**< object */
 
       uint32_t index = ecma_string_get_array_index (name_p);
 
-      if (index != ECMA_STRING_NOT_ARRAY_INDEX)
+      if (unlikely(index != ECMA_STRING_NOT_ARRAY_INDEX))
       {
         /* The name is a valid array index. */
         array_index_named_properties_count++;
       }
-      else if (!is_array_indices_only)
+      else if (likely(!is_array_indices_only))
       {
         string_named_properties_count++;
       }
@@ -1566,7 +1566,7 @@ ecma_op_object_get_property_names (ecma_object_t *obj_p, /**< object */
 
       uint32_t index = ecma_string_get_array_index (name_p);
 
-      if (index != ECMA_STRING_NOT_ARRAY_INDEX)
+      if (unlikely(index != ECMA_STRING_NOT_ARRAY_INDEX))
       {
         JERRY_ASSERT (array_index_name_pos < array_index_named_properties_count);
 
@@ -1598,7 +1598,7 @@ ecma_op_object_get_property_names (ecma_object_t *obj_p, /**< object */
           array_index_names_p[insertion_pos] = index;
         }
       }
-      else if (!is_array_indices_only)
+      else if (likely(!is_array_indices_only))
       {
         /*
          * Filling from end to begin, as list of object's properties is sorted
@@ -1639,7 +1639,7 @@ ecma_op_object_get_property_names (ecma_object_t *obj_p, /**< object */
       uint32_t bitmap_row = (uint32_t) (hash / bitmap_row_size);
       uint32_t bitmap_column = (uint32_t) (hash % bitmap_row_size);
 
-      if ((names_hashes_bitmap[bitmap_row] & (1u << bitmap_column)) == 0)
+      if (likely((names_hashes_bitmap[bitmap_row] & (1u << bitmap_column)) == 0))
       {
         /* This hash has not been used before (for non-skipped). */
         names_hashes_bitmap[bitmap_row] |= (1u << bitmap_column);
@@ -1661,7 +1661,7 @@ ecma_op_object_get_property_names (ecma_object_t *obj_p, /**< object */
         }
       }
 
-      if (is_append)
+      if (likely(is_append))
       {
         ecma_collection_iterator_init (&iter, skipped_non_enumerable_p);
         while (ecma_collection_iterator_next (&iter))
@@ -1676,7 +1676,7 @@ ecma_op_object_get_property_names (ecma_object_t *obj_p, /**< object */
         }
       }
 
-      if (is_append)
+      if (likely(is_append))
       {
         JERRY_ASSERT ((names_hashes_bitmap[bitmap_row] & (1u << bitmap_column)) != 0);
 
