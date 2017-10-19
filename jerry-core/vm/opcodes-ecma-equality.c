@@ -76,7 +76,7 @@ opfunc_not_equal_value (ecma_value_t left_value, /**< left value */
   JERRY_ASSERT (ecma_is_value_boolean (compare_result)
                 || ECMA_IS_VALUE_ERROR (compare_result));
 
-  if (!ECMA_IS_VALUE_ERROR (compare_result))
+  if (unlikely(!ECMA_IS_VALUE_ERROR (compare_result)))
   {
     compare_result = ecma_invert_boolean_value (compare_result);
   }

@@ -349,8 +349,8 @@ ecma_date_local_time_zone (ecma_number_t time) /**< time value */
 {
   jerry_time_zone_t tz;
 
-  if (ecma_number_is_nan (time)
-      || !jerry_port_get_time_zone (&tz))
+  if (likely(ecma_number_is_nan (time)
+      || !jerry_port_get_time_zone (&tz)))
   {
     return ecma_number_make_nan ();
   }

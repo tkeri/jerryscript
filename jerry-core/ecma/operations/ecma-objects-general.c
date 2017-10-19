@@ -292,8 +292,8 @@ ecma_op_general_object_define_own_property (ecma_object_t *object_p, /**< the ob
 
   ecma_property_types_t property_desc_type = ECMA_PROPERTY_TYPE_GENERIC;
 
-  if (property_desc_p->is_value_defined
-      || property_desc_p->is_writable_defined)
+  if (unlikely(property_desc_p->is_value_defined
+      || property_desc_p->is_writable_defined))
   {
     /* A property descriptor cannot be both named data and named accessor. */
     JERRY_ASSERT (!property_desc_p->is_get_defined
@@ -321,10 +321,10 @@ ecma_op_general_object_define_own_property (ecma_object_t *object_p, /**< the ob
                                                   &ext_property_ref.property_ref,
                                                   ECMA_PROPERTY_GET_VALUE | ECMA_PROPERTY_GET_EXT_REFERENCE);
 
-  if (current_prop == ECMA_PROPERTY_TYPE_NOT_FOUND || current_prop == ECMA_PROPERTY_TYPE_NOT_FOUND_AND_STOP)
+  if (unlikely(current_prop == ECMA_PROPERTY_TYPE_NOT_FOUND || current_prop == ECMA_PROPERTY_TYPE_NOT_FOUND_AND_STOP))
   {
     /* 3. */
-    if (!ecma_get_object_extensible (object_p))
+    if (unlikely(!ecma_get_object_extensible (object_p)))
     {
       /* 2. */
       return ecma_reject (is_throw);
@@ -332,7 +332,7 @@ ecma_op_general_object_define_own_property (ecma_object_t *object_p, /**< the ob
 
     /* 4. */
 
-    if (property_desc_type != ECMA_PROPERTY_TYPE_NAMEDACCESSOR)
+    if (unlikely(property_desc_type != ECMA_PROPERTY_TYPE_NAMEDACCESSOR))
     {
       /* a. */
 
@@ -341,15 +341,15 @@ ecma_op_general_object_define_own_property (ecma_object_t *object_p, /**< the ob
 
       uint8_t prop_attributes = 0;
 
-      if (property_desc_p->is_configurable)
+      if (unlikely(property_desc_p->is_configurable))
       {
         prop_attributes = (uint8_t) (prop_attributes | ECMA_PROPERTY_FLAG_CONFIGURABLE);
       }
-      if (property_desc_p->is_enumerable)
+      if (unlikely(property_desc_p->is_enumerable))
       {
         prop_attributes = (uint8_t) (prop_attributes | ECMA_PROPERTY_FLAG_ENUMERABLE);
       }
-      if (property_desc_p->is_writable)
+      if (unlikely(property_desc_p->is_writable))
       {
         prop_attributes = (uint8_t) (prop_attributes | ECMA_PROPERTY_FLAG_WRITABLE);
       }
@@ -435,7 +435,7 @@ ecma_op_general_object_define_own_property (ecma_object_t *object_p, /**< the ob
   {
     /* No action required. */
   }
-  else if (likely (property_desc_type == current_property_type))
+  else if (unlikely (property_desc_type == current_property_type))
   {
     /* If property is configurable, there is no need for checks. */
     if (unlikely (!is_current_configurable))

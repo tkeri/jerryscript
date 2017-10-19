@@ -37,7 +37,7 @@ lit_is_valid_utf8_string (const lit_utf8_byte_t *utf8_buf_p, /**< utf-8 string *
   while (idx < buf_size)
   {
     lit_utf8_byte_t c = utf8_buf_p[idx++];
-    if ((c & LIT_UTF8_1_BYTE_MASK) == LIT_UTF8_1_BYTE_MARKER)
+    if (unlikely((c & LIT_UTF8_1_BYTE_MASK) == LIT_UTF8_1_BYTE_MARKER))
     {
       is_prev_code_point_high_surrogate = false;
       continue;
@@ -415,7 +415,7 @@ lit_read_code_unit_from_utf8 (const lit_utf8_byte_t *buf_p, /**< buffer with cha
 
   lit_code_point_t ret = LIT_UNICODE_CODE_POINT_NULL;
   ecma_length_t bytes_count;
-  if ((c & LIT_UTF8_2_BYTE_MASK) == LIT_UTF8_2_BYTE_MARKER)
+  if (unlikely((c & LIT_UTF8_2_BYTE_MASK) == LIT_UTF8_2_BYTE_MARKER))
   {
     bytes_count = 2;
     ret = ((lit_code_point_t) (c & LIT_UTF8_LAST_5_BITS_MASK));
@@ -624,11 +624,11 @@ lit_utf8_string_code_unit_at (const lit_utf8_byte_t *utf8_buf_p, /**< utf-8 stri
 inline lit_utf8_size_t __attr_always_inline___
 lit_get_unicode_char_size_by_utf8_first_byte (const lit_utf8_byte_t first_byte) /**< buffer with characters */
 {
-  if ((first_byte & LIT_UTF8_1_BYTE_MASK) == LIT_UTF8_1_BYTE_MARKER)
+  if (unlikely((first_byte & LIT_UTF8_1_BYTE_MASK) == LIT_UTF8_1_BYTE_MARKER))
   {
     return 1;
   }
-  else if ((first_byte & LIT_UTF8_2_BYTE_MASK) == LIT_UTF8_2_BYTE_MARKER)
+  else if (unlikely((first_byte & LIT_UTF8_2_BYTE_MASK) == LIT_UTF8_2_BYTE_MARKER))
   {
     return 2;
   }
@@ -649,7 +649,7 @@ lit_code_unit_to_utf8 (ecma_char_t code_unit, /**< code unit */
                        lit_utf8_byte_t *buf_p) /**< buffer where to store the result and its size
                                                 *   should be at least LIT_UTF8_MAX_BYTES_IN_CODE_UNIT */
 {
-  if (code_unit <= LIT_UTF8_1_BYTE_CODE_POINT_MAX)
+  if (unlikely(code_unit <= LIT_UTF8_1_BYTE_CODE_POINT_MAX))
   {
     buf_p[0] = (lit_utf8_byte_t) code_unit;
     return 1;

@@ -205,7 +205,7 @@ jmem_heap_alloc_block_internal (const size_t size)
 
   /* Fast path for 8 byte chunks, first region is guaranteed to be sufficient. */
   if (required_size == JMEM_ALIGNMENT
-      && likely (JERRY_HEAP_CONTEXT (first).next_offset != JMEM_HEAP_END_OF_LIST))
+      &&  (JERRY_HEAP_CONTEXT (first).next_offset != JMEM_HEAP_END_OF_LIST))
   {
     data_space_p = JMEM_HEAP_GET_ADDR_FROM_OFFSET (JERRY_HEAP_CONTEXT (first).next_offset);
     JERRY_ASSERT (jmem_is_heap_pointer (data_space_p));
@@ -359,7 +359,7 @@ jmem_heap_gc_and_alloc_block (const size_t size,      /**< required memory size 
 
   void *data_space_p = jmem_heap_alloc_block_internal (size);
 
-  if (likely (data_space_p != NULL))
+  if (unlikely (data_space_p != NULL))
   {
     VALGRIND_FREYA_MALLOCLIKE_SPACE (data_space_p, size);
     return data_space_p;
@@ -373,7 +373,7 @@ jmem_heap_gc_and_alloc_block (const size_t size,      /**< required memory size 
 
     data_space_p = jmem_heap_alloc_block_internal (size);
 
-    if (likely (data_space_p != NULL))
+    if (unlikely (data_space_p != NULL))
     {
       VALGRIND_FREYA_MALLOCLIKE_SPACE (data_space_p, size);
       return data_space_p;

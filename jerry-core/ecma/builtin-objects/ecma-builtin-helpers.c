@@ -443,7 +443,7 @@ ecma_builtin_helper_string_index_normalize (ecma_number_t index, /**< index */
       norm_index = length;
     }
   }
-  else if (!ecma_number_is_negative (index))
+  else if (likely(!ecma_number_is_negative (index)))
   {
     if (ecma_number_is_infinity (index))
     {

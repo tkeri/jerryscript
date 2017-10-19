@@ -100,7 +100,7 @@ ecma_is_constructor (ecma_value_t value) /**< ecma value */
   JERRY_ASSERT (obj_p != NULL);
   JERRY_ASSERT (!ecma_is_lexical_environment (obj_p));
 
-  if (ecma_get_object_type (obj_p) == ECMA_OBJECT_TYPE_FUNCTION)
+  if (unlikely(ecma_get_object_type (obj_p) == ECMA_OBJECT_TYPE_FUNCTION))
   {
     return (!ecma_get_object_is_builtin (obj_p)
             || !ecma_builtin_function_is_routine (obj_p));
@@ -336,7 +336,7 @@ ecma_op_function_call (ecma_object_t *func_obj_p, /**< Function object */
 
   ecma_value_t ret_value = ecma_make_simple_value (ECMA_SIMPLE_VALUE_EMPTY);
 
-  if (ecma_get_object_type (func_obj_p) == ECMA_OBJECT_TYPE_FUNCTION)
+  if (unlikely(ecma_get_object_type (func_obj_p) == ECMA_OBJECT_TYPE_FUNCTION))
   {
     if (unlikely (ecma_get_object_is_builtin (func_obj_p)))
     {
@@ -386,7 +386,7 @@ ecma_op_function_call (ecma_object_t *func_obj_p, /**< Function object */
 
       /* 5. */
       ecma_object_t *local_env_p;
-      if (is_no_lex_env)
+      if (unlikely(is_no_lex_env))
       {
         local_env_p = scope_p;
       }
@@ -562,7 +562,7 @@ ecma_op_function_construct_simple_or_external (ecma_object_t *func_obj_p, /**< F
 
   /* 1., 2., 4. */
   ecma_object_t *obj_p;
-  if (ecma_is_value_object (func_obj_prototype_prop_value))
+  if (unlikely(ecma_is_value_object (func_obj_prototype_prop_value)))
   {
     /* 6. */
     obj_p = ecma_create_object (ecma_get_object_from_value (func_obj_prototype_prop_value),
@@ -639,7 +639,7 @@ ecma_op_function_construct (ecma_object_t *func_obj_p, /**< Function object */
 
   ecma_value_t ret_value = ecma_make_simple_value (ECMA_SIMPLE_VALUE_EMPTY);
 
-  if (ecma_get_object_type (func_obj_p) == ECMA_OBJECT_TYPE_FUNCTION)
+  if (unlikely(ecma_get_object_type (func_obj_p) == ECMA_OBJECT_TYPE_FUNCTION))
   {
     if (unlikely (ecma_get_object_is_builtin (func_obj_p)
                   && !ecma_builtin_function_is_routine (func_obj_p)))

@@ -48,7 +48,7 @@ ecma_op_resolve_reference_base (ecma_object_t *lex_env_p, /**< starting lexical 
 
   while (lex_env_iter_p != NULL)
   {
-    if (ecma_op_has_binding (lex_env_iter_p, name_p))
+    if (unlikely(ecma_op_has_binding (lex_env_iter_p, name_p)))
     {
       return lex_env_iter_p;
     }
@@ -94,7 +94,7 @@ ecma_op_resolve_reference_value (ecma_object_t *lex_env_p, /**< starting lexical
       {
         ecma_property_value_t *prop_value_p = ECMA_PROPERTY_VALUE_PTR (property_p);
 
-        if (ECMA_PROPERTY_GET_TYPE (*property_p) == ECMA_PROPERTY_TYPE_NAMEDDATA)
+        if (unlikely(ECMA_PROPERTY_GET_TYPE (*property_p) == ECMA_PROPERTY_TYPE_NAMEDDATA))
         {
           return ecma_fast_copy_value (prop_value_p->value);
         }

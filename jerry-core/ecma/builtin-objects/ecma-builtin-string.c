@@ -92,7 +92,7 @@ ecma_builtin_string_object_from_char_code (ecma_value_t this_arg, /**< 'this' ar
       ECMA_OP_TO_NUMBER_FINALIZE (arg_num);
     }
 
-    if (ecma_is_value_empty (ret_value))
+    if (likely(ecma_is_value_empty (ret_value)))
     {
       ret_string_p = ecma_new_ecma_string_from_utf8 (utf8_buf_p, utf8_buf_used);
     }
@@ -100,7 +100,7 @@ ecma_builtin_string_object_from_char_code (ecma_value_t this_arg, /**< 'this' ar
     JMEM_FINALIZE_LOCAL_ARRAY (utf8_buf_p);
   }
 
-  if (ecma_is_value_empty (ret_value))
+  if (likely(ecma_is_value_empty (ret_value)))
   {
     ret_value = ecma_make_string_value (ret_string_p);
   }

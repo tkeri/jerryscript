@@ -187,14 +187,14 @@ ecma_builtin_math_dispatch_routine (uint16_t builtin_routine_id, /**< built-in w
 {
   JERRY_UNUSED (this_arg);
 
-  if (builtin_routine_id <= ECMA_MATH_OBJECT_POW)
+  if (likely(builtin_routine_id <= ECMA_MATH_OBJECT_POW))
   {
     ecma_number_t x = ecma_number_make_nan ();
     ecma_number_t y = ecma_number_make_nan ();
 
-    if (arguments_number >= 1)
+    if (likely(arguments_number >= 1))
     {
-      if (ecma_is_value_number (arguments_list[0]))
+      if (likely(ecma_is_value_number (arguments_list[0])))
       {
         x = ecma_get_number_from_value (arguments_list[0]);
       }
@@ -215,9 +215,9 @@ ecma_builtin_math_dispatch_routine (uint16_t builtin_routine_id, /**< built-in w
 
     if (builtin_routine_id >= ECMA_MATH_OBJECT_ATAN2)
     {
-      if (arguments_number >= 2)
+      if (likely(arguments_number >= 2))
       {
-        if (ecma_is_value_number (arguments_list[1]))
+        if (likely(ecma_is_value_number (arguments_list[1])))
         {
           y = ecma_get_number_from_value (arguments_list[1]);
         }

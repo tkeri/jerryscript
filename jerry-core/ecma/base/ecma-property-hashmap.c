@@ -99,7 +99,7 @@ ecma_property_hashmap_create (ecma_object_t *object_p) /**< object */
     {
       ecma_property_types_t type = ECMA_PROPERTY_GET_TYPE (prop_iter_p->types[i]);
 
-      if (type == ECMA_PROPERTY_TYPE_NAMEDDATA || type == ECMA_PROPERTY_TYPE_NAMEDACCESSOR)
+      if (unlikely(type == ECMA_PROPERTY_TYPE_NAMEDDATA || type == ECMA_PROPERTY_TYPE_NAMEDACCESSOR))
       {
         named_property_count++;
       }
@@ -181,7 +181,7 @@ ecma_property_hashmap_create (ecma_object_t *object_p) /**< object */
                                                                  property_pair_p->names_cp[i]);
       uint32_t step = ecma_property_hashmap_steps[entry_index & (ECMA_PROPERTY_HASHMAP_NUMBER_OF_STEPS - 1)];
 
-      if (mask < LIT_STRING_HASH_LIMIT)
+      if (unlikely(mask < LIT_STRING_HASH_LIMIT))
       {
         entry_index &= mask;
       }
@@ -477,7 +477,7 @@ ecma_property_hashmap_find (ecma_property_hashmap_t *hashmap_p, /**< hashmap */
   jmem_cpointer_t *pair_list_p = (jmem_cpointer_t *) (hashmap_p + 1);
   uint8_t *bits_p = (uint8_t *) (pair_list_p + hashmap_p->max_property_count);
 
-  if (mask < LIT_STRING_HASH_LIMIT)
+  if (unlikely(mask < LIT_STRING_HASH_LIMIT))
   {
     entry_index &= mask;
   }
@@ -522,7 +522,7 @@ ecma_property_hashmap_find (ecma_property_hashmap_t *hashmap_p, /**< hashmap */
     }
     else
     {
-      if (!ECMA_PROPERTY_HASHMAP_GET_BIT (bits_p, entry_index))
+      if (unlikely(!ECMA_PROPERTY_HASHMAP_GET_BIT (bits_p, entry_index)))
       {
 #ifndef JERRY_NDEBUG
         JERRY_ASSERT (!property_found);

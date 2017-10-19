@@ -124,7 +124,7 @@ ecma_op_create_mutable_binding (ecma_object_t *lex_env_p, /**< lexical environme
                 && ecma_is_lexical_environment (lex_env_p));
   JERRY_ASSERT (name_p != NULL);
 
-  if (ecma_get_lex_env_type (lex_env_p) == ECMA_LEXICAL_ENVIRONMENT_DECLARATIVE)
+  if (unlikely(ecma_get_lex_env_type (lex_env_p) == ECMA_LEXICAL_ENVIRONMENT_DECLARATIVE))
   {
     uint8_t prop_attributes = ECMA_PROPERTY_FLAG_WRITABLE;
 
@@ -192,7 +192,7 @@ ecma_op_set_mutable_binding (ecma_object_t *lex_env_p, /**< lexical environment 
     JERRY_ASSERT (property_p != NULL
                   && ECMA_PROPERTY_GET_TYPE (*property_p) == ECMA_PROPERTY_TYPE_NAMEDDATA);
 
-    if (ecma_is_property_writable (*property_p))
+    if (unlikely(ecma_is_property_writable (*property_p)))
     {
       ecma_named_data_property_assign_value (lex_env_p, ECMA_PROPERTY_VALUE_PTR (property_p), value);
     }

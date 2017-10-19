@@ -47,7 +47,7 @@ ecma_value_t
 vm_var_decl (vm_frame_ctx_t *frame_ctx_p, /**< interpreter context */
              ecma_string_t *var_name_str_p) /**< variable name */
 {
-  if (!ecma_op_has_binding (frame_ctx_p->lex_env_p, var_name_str_p))
+  if (unlikely(!ecma_op_has_binding (frame_ctx_p->lex_env_p, var_name_str_p)))
   {
     const bool is_configurable_bindings = frame_ctx_p->is_eval_code;
 
@@ -296,8 +296,8 @@ opfunc_for_in (ecma_value_t left_value, /**< left value */
   ecma_collection_header_t *prop_names_p = NULL;
 
   /* 3. */
-  if (!ecma_is_value_undefined (left_value)
-      && !ecma_is_value_null (left_value))
+  if (unlikely(!ecma_is_value_undefined (left_value)
+      && !ecma_is_value_null (left_value)))
   {
     /* 4. */
     ECMA_TRY_CATCH (obj_expr_value,
@@ -307,7 +307,7 @@ opfunc_for_in (ecma_value_t left_value, /**< left value */
     ecma_object_t *obj_p = ecma_get_object_from_value (obj_expr_value);
     prop_names_p = ecma_op_object_get_property_names (obj_p, false, true, true);
 
-    if (prop_names_p->unit_number != 0)
+    if (unlikely(prop_names_p->unit_number != 0))
     {
       ecma_ref_object (obj_p);
       *result_obj_p = ecma_make_object_value (obj_p);

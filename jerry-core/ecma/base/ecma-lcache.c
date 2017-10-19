@@ -158,7 +158,7 @@ ecma_string_to_lcache_property_name (const ecma_string_t *prop_name_p, /**< prop
 
 #else /* !JERRY_CPOINTER_32_BIT */
 
-      if (prop_name_p->u.uint32_number < (UINT16_MAX + 1))
+      if (unlikely(prop_name_p->u.uint32_number < (UINT16_MAX + 1)))
       {
         *name_type_p = (ecma_property_t) container;
         return (jmem_cpointer_t) prop_name_p->u.uint32_number;
