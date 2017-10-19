@@ -143,7 +143,7 @@ jmem_unregister_free_unused_memory_callback (jmem_free_unused_memory_callback_t 
 void
 jmem_run_free_unused_memory_callbacks (jmem_free_unused_memory_severity_t severity) /**< severity of the request */
 {
-  if (JERRY_CONTEXT (jmem_free_unused_memory_callback) != NULL)
+  if (likely(JERRY_CONTEXT (jmem_free_unused_memory_callback) != NULL))
   {
     JERRY_CONTEXT (jmem_free_unused_memory_callback) (severity);
   }

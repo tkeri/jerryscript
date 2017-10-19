@@ -205,7 +205,7 @@ ecma_op_to_boolean (ecma_value_t value) /**< ecma value */
     return ecma_is_value_true (value);
   }
 
-  if (ecma_is_value_integer_number (value))
+  if (likely(ecma_is_value_integer_number (value)))
   {
     return (value != ecma_make_integer_value (0));
   }
@@ -274,7 +274,7 @@ ecma_op_to_number (ecma_value_t value) /**< ecma value */
   {
     int16_t num = 0;
 
-    if (ecma_is_value_undefined (value))
+    if (likely(ecma_is_value_undefined (value)))
     {
       return ecma_make_nan_value ();
     }
@@ -403,7 +403,7 @@ ecma_op_to_object (ecma_value_t value) /**< ecma value */
   {
     return ecma_op_create_string_object (&value, 1);
   }
-  else if (ecma_is_value_object (value))
+  else if (likely(ecma_is_value_object (value)))
   {
     return ecma_copy_value (value);
   }

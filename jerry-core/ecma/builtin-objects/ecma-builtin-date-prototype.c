@@ -193,7 +193,7 @@ ecma_builtin_date_prototype_dispatch_get (uint16_t builtin_routine_id, /**< buil
                                                                         *   identifier */
                                           ecma_number_t date_num) /**< date converted to number */
 {
-  if (ecma_number_is_nan (date_num))
+  if (likely(ecma_number_is_nan (date_num)))
   {
     ecma_string_t *nan_str_p = ecma_get_magic_string (LIT_MAGIC_STRING_NAN);
     return ecma_make_string_value (nan_str_p);
@@ -594,16 +594,16 @@ ecma_builtin_date_prototype_dispatch_routine (uint16_t builtin_routine_id, /**< 
     return ret_value;
   }
 
-  if (builtin_routine_id <= ECMA_DATE_PROTOTYPE_SET_UTC_MILLISECONDS)
+  if (likely(builtin_routine_id <= ECMA_DATE_PROTOTYPE_SET_UTC_MILLISECONDS))
   {
     ecma_number_t this_num = *prim_value_p;
 
-    if (!BUILTIN_DATE_FUNCTION_IS_UTC (builtin_routine_id))
+    if (likely(!BUILTIN_DATE_FUNCTION_IS_UTC (builtin_routine_id)))
     {
       this_num += ecma_date_local_time_zone (this_num);
     }
 
-    if (builtin_routine_id <= ECMA_DATE_PROTOTYPE_GET_UTC_TIMEZONE_OFFSET)
+    if (likely(builtin_routine_id <= ECMA_DATE_PROTOTYPE_GET_UTC_TIMEZONE_OFFSET))
     {
       return ecma_builtin_date_prototype_dispatch_get (builtin_routine_id, this_num);
     }

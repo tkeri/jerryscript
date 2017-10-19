@@ -94,7 +94,7 @@ ecma_create_object (ecma_object_t *prototype_object_p, /**< pointer to prototybe
 {
   ecma_object_t *new_object_p;
 
-  if (ext_object_size > 0)
+  if (likely(ext_object_size > 0))
   {
     new_object_p = (ecma_object_t *) ecma_alloc_extended_object (ext_object_size);
   }
@@ -653,7 +653,7 @@ ecma_find_named_property (ecma_object_t *obj_p, /**< object to find property in 
       }
     }
 
-    if (ECMA_PROPERTY_IS_NAMED_PROPERTY (prop_iter_p->types[1]))
+    if (likely(ECMA_PROPERTY_IS_NAMED_PROPERTY (prop_iter_p->types[1])))
     {
       if (ecma_string_compare_to_property_name (prop_iter_p->types[1],
                                                 prop_pair_p->names_cp[1],

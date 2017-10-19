@@ -129,8 +129,8 @@ opfunc_addition (ecma_value_t left_value, /**< left value */
 
   ecma_value_t ret_value = ecma_make_simple_value (ECMA_SIMPLE_VALUE_EMPTY);
 
-  if (ecma_is_value_string (left_value)
-      || ecma_is_value_string (right_value))
+  if (likely(ecma_is_value_string (left_value)
+      || ecma_is_value_string (right_value)))
   {
     ECMA_TRY_CATCH (str_left_value, ecma_op_to_string (left_value), ret_value);
     ECMA_TRY_CATCH (str_right_value, ecma_op_to_string (right_value), ret_value);

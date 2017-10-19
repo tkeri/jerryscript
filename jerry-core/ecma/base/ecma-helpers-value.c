@@ -474,7 +474,7 @@ ecma_make_int32_value (int32_t int32_number) /**< int32 number to be encoded */
 ecma_value_t
 ecma_make_uint32_value (uint32_t uint32_number) /**< uint32 number to be encoded */
 {
-  if (uint32_number <= ECMA_INTEGER_NUMBER_MAX)
+  if (likely(uint32_number <= ECMA_INTEGER_NUMBER_MAX))
   {
     return ecma_make_integer_value ((ecma_integer_value_t) uint32_number);
   }
@@ -678,7 +678,7 @@ ecma_fast_copy_value (ecma_value_t value)  /**< value description */
 ecma_value_t
 ecma_copy_value_if_not_object (ecma_value_t value) /**< value description */
 {
-  if (ecma_get_value_type_field (value) != ECMA_TYPE_OBJECT)
+  if (likely(ecma_get_value_type_field (value) != ECMA_TYPE_OBJECT))
   {
     return ecma_copy_value (value);
   }

@@ -221,7 +221,7 @@ lit_char_is_unicode_non_letter_ident_part (ecma_char_t c) /**< code unit */
 bool
 lit_char_is_identifier_start (const uint8_t *src_p) /**< pointer to a vaild UTF8 character */
 {
-  if (*src_p <= LIT_UTF8_1_BYTE_CODE_POINT_MAX)
+  if (likely(*src_p <= LIT_UTF8_1_BYTE_CODE_POINT_MAX))
   {
     return lit_char_is_identifier_start_character (*src_p);
   }
@@ -246,7 +246,7 @@ bool
 lit_char_is_identifier_start_character (uint16_t chr) /**< EcmaScript character */
 {
   /* Fast path for ASCII-defined letters. */
-  if (chr <= LIT_UTF8_1_BYTE_CODE_POINT_MAX)
+  if (likely(chr <= LIT_UTF8_1_BYTE_CODE_POINT_MAX))
   {
     return ((LEXER_TO_ASCII_LOWERCASE (chr) >= LIT_CHAR_LOWERCASE_A
              && LEXER_TO_ASCII_LOWERCASE (chr) <= LIT_CHAR_LOWERCASE_Z)
@@ -265,7 +265,7 @@ lit_char_is_identifier_start_character (uint16_t chr) /**< EcmaScript character 
 bool
 lit_char_is_identifier_part (const uint8_t *src_p) /**< pointer to a vaild UTF8 character */
 {
-  if (*src_p <= LIT_UTF8_1_BYTE_CODE_POINT_MAX)
+  if (likely(*src_p <= LIT_UTF8_1_BYTE_CODE_POINT_MAX))
   {
     return lit_char_is_identifier_part_character (*src_p);
   }
@@ -290,7 +290,7 @@ bool
 lit_char_is_identifier_part_character (uint16_t chr) /**< EcmaScript character */
 {
   /* Fast path for ASCII-defined letters. */
-  if (chr <= LIT_UTF8_1_BYTE_CODE_POINT_MAX)
+  if (likely(chr <= LIT_UTF8_1_BYTE_CODE_POINT_MAX))
   {
     return ((LEXER_TO_ASCII_LOWERCASE (chr) >= LIT_CHAR_LOWERCASE_A
              && LEXER_TO_ASCII_LOWERCASE (chr) <= LIT_CHAR_LOWERCASE_Z)

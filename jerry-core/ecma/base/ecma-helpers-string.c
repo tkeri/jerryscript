@@ -1398,7 +1398,7 @@ ecma_string_to_property_name (ecma_string_t *prop_name_p, /**< property name */
 
 #else /* !JERRY_CPOINTER_32_BIT */
 
-      if (prop_name_p->u.common_uint32_field < (UINT16_MAX + 1))
+      if (likely(prop_name_p->u.common_uint32_field < (UINT16_MAX + 1)))
       {
         *name_type_p = (ecma_property_t) (container << ECMA_PROPERTY_NAME_TYPE_SHIFT);
         return (jmem_cpointer_t) prop_name_p->u.common_uint32_field;
@@ -1605,7 +1605,7 @@ ecma_compare_ecma_strings (const ecma_string_t *string1_p, /* ecma-string */
   JERRY_ASSERT (string1_p != NULL && string2_p != NULL);
 
   /* Fast paths first. */
-  if (string1_p == string2_p)
+  if (likely(string1_p == string2_p))
   {
     return true;
   }
@@ -1925,9 +1925,9 @@ ecma_string_get_char_at_pos (const ecma_string_t *string_p, /**< ecma-string */
   bool is_ascii;
   const lit_utf8_byte_t *chars_p = ecma_string_raw_chars (string_p, &buffer_size, &is_ascii);
 
-  if (chars_p != NULL)
+  if (likely(chars_p != NULL))
   {
-    if (is_ascii)
+    if (likely(is_ascii))
     {
       return chars_p[index];
     }
@@ -2027,7 +2027,7 @@ ecma_string_substr (const ecma_string_t *string_p, /**< pointer to an ecma strin
 
   ECMA_STRING_TO_UTF8_STRING (string_p, start_p, buffer_size);
 
-  if (string_length == buffer_size)
+  if (likely(string_length == buffer_size))
   {
     ecma_string_p = ecma_new_ecma_string_from_utf8 (start_p + start_pos,
                                                     (lit_utf8_size_t) end_pos);

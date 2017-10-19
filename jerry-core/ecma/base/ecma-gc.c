@@ -223,7 +223,7 @@ ecma_gc_mark (ecma_object_t *object_p) /**< object to mark from */
       ecma_gc_set_object_visited (lex_env_p);
     }
 
-    if (ecma_get_lex_env_type (object_p) != ECMA_LEXICAL_ENVIRONMENT_DECLARATIVE)
+    if (likely(ecma_get_lex_env_type (object_p) != ECMA_LEXICAL_ENVIRONMENT_DECLARATIVE))
     {
       ecma_object_t *binding_object_p = ecma_get_lex_env_binding_object (object_p);
       ecma_gc_set_object_visited (binding_object_p);
@@ -234,7 +234,7 @@ ecma_gc_mark (ecma_object_t *object_p) /**< object to mark from */
   else
   {
     ecma_object_t *proto_p = ecma_get_object_prototype (object_p);
-    if (proto_p != NULL)
+    if (likely(proto_p != NULL))
     {
       ecma_gc_set_object_visited (proto_p);
     }
@@ -444,8 +444,8 @@ ecma_gc_free_object (ecma_object_t *object_p) /**< object to free */
 
   bool obj_is_not_lex_env = !ecma_is_lexical_environment (object_p);
 
-  if (obj_is_not_lex_env
-      || ecma_get_lex_env_type (object_p) == ECMA_LEXICAL_ENVIRONMENT_DECLARATIVE)
+  if (likely(obj_is_not_lex_env
+      || ecma_get_lex_env_type (object_p) == ECMA_LEXICAL_ENVIRONMENT_DECLARATIVE))
   {
     ecma_property_header_t *prop_iter_p = ecma_get_property_list (object_p);
 
@@ -498,7 +498,7 @@ ecma_gc_free_object (ecma_object_t *object_p) /**< object to free */
   JERRY_ASSERT (JERRY_CONTEXT (ecma_gc_objects_number) > 0);
   JERRY_CONTEXT (ecma_gc_objects_number)--;
 
-  if (obj_is_not_lex_env)
+  if (likely(obj_is_not_lex_env))
   {
     ecma_object_type_t object_type = ecma_get_object_type (object_p);
 
@@ -873,7 +873,7 @@ ecma_free_unused_memory (jmem_free_unused_memory_severity_t severity) /**< sever
   }
 #endif /* JERRY_DEBUGGER */
 
-  if (severity == JMEM_FREE_UNUSED_MEMORY_SEVERITY_LOW)
+  if (likely(severity == JMEM_FREE_UNUSED_MEMORY_SEVERITY_LOW))
   {
 #ifndef CONFIG_ECMA_PROPERTY_HASHMAP_DISABLE
     if (JERRY_CONTEXT (ecma_prop_hashmap_alloc_state) > ECMA_PROP_HASHMAP_ALLOC_ON)

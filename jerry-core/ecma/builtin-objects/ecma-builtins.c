@@ -492,7 +492,7 @@ ecma_builtin_try_to_instantiate_property (ecma_object_t *object_p, /**< object *
 
   lit_magic_string_id_t magic_string_id = ecma_get_string_magic (string_p);
 
-  if (magic_string_id == LIT_MAGIC_STRING__COUNT)
+  if (likely(magic_string_id == LIT_MAGIC_STRING__COUNT))
   {
     return NULL;
   }
@@ -839,7 +839,7 @@ ecma_builtin_dispatch_call (ecma_object_t *obj_p, /**< built-in object */
   ecma_value_t ret_value = ecma_make_simple_value (ECMA_SIMPLE_VALUE_EMPTY);
   ecma_extended_object_t *ext_obj_p = (ecma_extended_object_t *) obj_p;
 
-  if (ecma_builtin_function_is_routine (obj_p))
+  if (likely(ecma_builtin_function_is_routine (obj_p)))
   {
     ret_value = ecma_builtin_dispatch_routine (ext_obj_p->u.built_in.id,
                                                ext_obj_p->u.built_in.routine_id,

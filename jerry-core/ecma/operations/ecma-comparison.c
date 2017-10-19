@@ -90,7 +90,7 @@ ecma_op_abstract_equality_compare (ecma_value_t x, /**< first operand */
     y = tmp;
   }
 
-  if (ecma_is_value_string (x))
+  if (likely(ecma_is_value_string (x)))
   {
     if (ecma_is_value_string (y))
     {
@@ -168,8 +168,8 @@ ecma_op_abstract_equality_compare (ecma_value_t x, /**< first operand */
     return ecma_op_abstract_equality_compare (ecma_make_integer_value (ecma_is_value_true (x) ? 1 : 0), y);
   }
 
-  if (ecma_is_value_undefined (x)
-      || ecma_is_value_null (x))
+  if (likely(ecma_is_value_undefined (x)
+      || ecma_is_value_null (x)))
   {
     /* 1. a., b. */
     /* 2., 3. */
@@ -299,7 +299,7 @@ ecma_op_abstract_relational_compare (ecma_value_t x, /**< first operand */
   const bool is_px_string = ecma_is_value_string (px);
   const bool is_py_string = ecma_is_value_string (py);
 
-  if (!(is_px_string && is_py_string))
+  if (likely(!(is_px_string && is_py_string)))
   {
     /* 3. */
 
@@ -308,8 +308,8 @@ ecma_op_abstract_relational_compare (ecma_value_t x, /**< first operand */
     ECMA_OP_TO_NUMBER_TRY_CATCH (ny, py, ret_value);
 
     /* b. */
-    if (ecma_number_is_nan (nx)
-        || ecma_number_is_nan (ny))
+    if (likely(ecma_number_is_nan (nx)
+        || ecma_number_is_nan (ny)))
     {
       /* c., d. */
       ret_value = ecma_make_simple_value (ECMA_SIMPLE_VALUE_UNDEFINED);

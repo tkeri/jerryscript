@@ -251,7 +251,7 @@ ecma_op_object_get_own_property (ecma_object_t *object_p, /**< the object */
       property_p = ecma_op_bound_function_try_to_lazy_instantiate_property (object_p, property_name_p);
     }
 
-    if (property_p == NULL)
+    if (likely(property_p == NULL))
     {
       return ECMA_PROPERTY_TYPE_NOT_FOUND;
     }
@@ -572,7 +572,7 @@ ecma_op_object_find_own (ecma_value_t base_value, /**< base value */
       property_p = ecma_op_bound_function_try_to_lazy_instantiate_property (object_p, property_name_p);
     }
 
-    if (property_p == NULL)
+    if (likely(property_p == NULL))
     {
       return ecma_make_simple_value (ECMA_SIMPLE_VALUE_NOT_FOUND);
     }
@@ -580,7 +580,7 @@ ecma_op_object_find_own (ecma_value_t base_value, /**< base value */
 
   ecma_property_value_t *prop_value_p = ECMA_PROPERTY_VALUE_PTR (property_p);
 
-  if (ECMA_PROPERTY_GET_TYPE (*property_p) == ECMA_PROPERTY_TYPE_NAMEDDATA)
+  if (likely(ECMA_PROPERTY_GET_TYPE (*property_p) == ECMA_PROPERTY_TYPE_NAMEDDATA))
   {
     return ecma_fast_copy_value (prop_value_p->value);
   }
@@ -618,7 +618,7 @@ ecma_op_object_find (ecma_object_t *object_p, /**< the object */
   {
     ecma_value_t value = ecma_op_object_find_own (base_value, object_p, property_name_p);
 
-    if (ecma_is_value_found (value))
+    if (likely(ecma_is_value_found (value)))
     {
       return value;
     }
@@ -870,9 +870,9 @@ ecma_op_object_put (ecma_object_t *object_p, /**< the object */
 
   if (property_p != NULL)
   {
-    if (ECMA_PROPERTY_GET_TYPE (*property_p) == ECMA_PROPERTY_TYPE_NAMEDDATA)
+    if (likely(ECMA_PROPERTY_GET_TYPE (*property_p) == ECMA_PROPERTY_TYPE_NAMEDDATA))
     {
-      if (ecma_is_property_writable (*property_p))
+      if (likely(ecma_is_property_writable (*property_p)))
       {
         /* There is no need for special casing arrays here because changing the
          * value of an existing property never changes the length of an array. */
@@ -894,7 +894,7 @@ ecma_op_object_put (ecma_object_t *object_p, /**< the object */
     ecma_object_t *proto_p = ecma_get_object_prototype (object_p);
     bool create_new_property = true;
 
-    if (proto_p != NULL)
+    if (likely(proto_p != NULL))
     {
       ecma_property_ref_t property_ref = { NULL };
 
@@ -917,8 +917,8 @@ ecma_op_object_put (ecma_object_t *object_p, /**< the object */
       }
     }
 
-    if (create_new_property
-        && ecma_get_object_extensible (object_p))
+    if (likely(create_new_property
+        && ecma_get_object_extensible (object_p)))
     {
       const ecma_object_type_t obj_type = ecma_get_object_type (object_p);
 
@@ -1467,8 +1467,8 @@ ecma_op_object_get_property_names (ecma_object_t *obj_p, /**< object */
       {
         ecma_property_t *property_p = prop_iter_p->types + i;
 
-        if (ECMA_PROPERTY_GET_TYPE (*property_p) == ECMA_PROPERTY_TYPE_NAMEDDATA
-            || ECMA_PROPERTY_GET_TYPE (*property_p) == ECMA_PROPERTY_TYPE_NAMEDACCESSOR)
+        if (likely(ECMA_PROPERTY_GET_TYPE (*property_p) == ECMA_PROPERTY_TYPE_NAMEDDATA
+            || ECMA_PROPERTY_GET_TYPE (*property_p) == ECMA_PROPERTY_TYPE_NAMEDACCESSOR))
         {
           ecma_property_pair_t *prop_pair_p = (ecma_property_pair_t *) prop_iter_p;
 
@@ -1482,7 +1482,7 @@ ecma_op_object_get_property_names (ecma_object_t *obj_p, /**< object */
           ecma_string_t *name_p = ecma_string_from_property_name (*property_p,
                                                                   prop_pair_p->names_cp[i]);
 
-          if (!(is_enumerable_only && !ecma_is_property_enumerable (*property_p)))
+          if (likely(!(is_enumerable_only && !ecma_is_property_enumerable (*property_p))))
           {
             uint8_t hash = (uint8_t) name_p->hash;
             uint32_t bitmap_row = (uint32_t) (hash / bitmap_row_size);
@@ -1506,7 +1506,7 @@ ecma_op_object_get_property_names (ecma_object_t *obj_p, /**< object */
               }
             }
 
-            if (is_add)
+            if (likely(is_add))
             {
               own_names_hashes_bitmap[bitmap_row] |= (1u << bitmap_column);
 
@@ -1544,7 +1544,7 @@ ecma_op_object_get_property_names (ecma_object_t *obj_p, /**< object */
         /* The name is a valid array index. */
         array_index_named_properties_count++;
       }
-      else if (!is_array_indices_only)
+      else if (likely(!is_array_indices_only))
       {
         string_named_properties_count++;
       }
@@ -1598,7 +1598,7 @@ ecma_op_object_get_property_names (ecma_object_t *obj_p, /**< object */
           array_index_names_p[insertion_pos] = index;
         }
       }
-      else if (!is_array_indices_only)
+      else if (likely(!is_array_indices_only))
       {
         /*
          * Filling from end to begin, as list of object's properties is sorted
@@ -1639,7 +1639,7 @@ ecma_op_object_get_property_names (ecma_object_t *obj_p, /**< object */
       uint32_t bitmap_row = (uint32_t) (hash / bitmap_row_size);
       uint32_t bitmap_column = (uint32_t) (hash % bitmap_row_size);
 
-      if ((names_hashes_bitmap[bitmap_row] & (1u << bitmap_column)) == 0)
+      if (likely((names_hashes_bitmap[bitmap_row] & (1u << bitmap_column)) == 0))
       {
         /* This hash has not been used before (for non-skipped). */
         names_hashes_bitmap[bitmap_row] |= (1u << bitmap_column);
@@ -1661,7 +1661,7 @@ ecma_op_object_get_property_names (ecma_object_t *obj_p, /**< object */
         }
       }
 
-      if (is_append)
+      if (likely(is_append))
       {
         ecma_collection_iterator_init (&iter, skipped_non_enumerable_p);
         while (ecma_collection_iterator_next (&iter))
@@ -1676,7 +1676,7 @@ ecma_op_object_get_property_names (ecma_object_t *obj_p, /**< object */
         }
       }
 
-      if (is_append)
+      if (likely(is_append))
       {
         JERRY_ASSERT ((names_hashes_bitmap[bitmap_row] & (1u << bitmap_column)) != 0);
 
@@ -1843,7 +1843,7 @@ inline bool __attr_always_inline___
 ecma_object_class_is (ecma_object_t *object_p, /**< object */
                       uint32_t class_id) /**< class id */
 {
-  if (ecma_get_object_type (object_p) == ECMA_OBJECT_TYPE_CLASS)
+  if (likely(ecma_get_object_type (object_p) == ECMA_OBJECT_TYPE_CLASS))
   {
     ecma_extended_object_t *ext_object_p = (ecma_extended_object_t *) object_p;
 

@@ -111,7 +111,7 @@ ecma_free_values_collection (ecma_collection_header_t *header_p, /**< collection
     {
       JERRY_ASSERT (cur_value_buf_iter_p < cur_value_buf_end_p);
 
-      if (do_deref_if_object)
+      if (likely(do_deref_if_object))
       {
         ecma_free_value (*cur_value_buf_iter_p);
       }
@@ -149,7 +149,7 @@ ecma_append_to_values_collection (ecma_collection_header_t *header_p, /**< colle
 
   values_number++;
 
-  if ((ecma_length_t) values_number == values_number)
+  if (likely((ecma_length_t) values_number == values_number))
   {
     header_p->unit_number = (ecma_length_t) values_number;
   }
@@ -161,7 +161,7 @@ ecma_append_to_values_collection (ecma_collection_header_t *header_p, /**< colle
   ecma_collection_chunk_t *chunk_p = ECMA_GET_POINTER (ecma_collection_chunk_t,
                                                        header_p->last_chunk_cp);
 
-  if (pos_of_new_value_in_chunk == 0)
+  if (likely(pos_of_new_value_in_chunk == 0))
   {
     /* all chunks are currently filled with values */
 
@@ -196,7 +196,7 @@ ecma_append_to_values_collection (ecma_collection_header_t *header_p, /**< colle
 
   JERRY_ASSERT ((uint8_t *) (values_p + pos_of_new_value_in_chunk + 1) <= (uint8_t *) (chunk_p + 1));
 
-  if (do_ref_if_object)
+  if (likely(do_ref_if_object))
   {
     values_p[pos_of_new_value_in_chunk] = ecma_copy_value (v);
   }
