@@ -57,7 +57,7 @@ ecma_date_parse_date_chars (const lit_utf8_byte_t **str_p, /**< pointer to the c
 
   while (num_of_chars--)
   {
-    if (*str_p >= str_end_p || !lit_char_is_decimal_digit (lit_utf8_read_next (str_p)))
+    if (likely(*str_p >= str_end_p || !lit_char_is_decimal_digit (lit_utf8_read_next (str_p))))
     {
       return ecma_number_make_nan ();
     }
@@ -199,7 +199,7 @@ ecma_builtin_date_parse (ecma_value_t this_arg, /**< this argument */
   /* 1. read year */
   ecma_number_t year = ecma_date_parse_date_chars (&date_str_curr_p, date_str_end_p, 4);
 
-  if (!ecma_number_is_nan (year)
+  if (unlikely(!ecma_number_is_nan (year))
       && year >= 0)
   {
     ecma_number_t month = ECMA_NUMBER_ONE;
@@ -488,7 +488,7 @@ ecma_builtin_date_dispatch_construct (const ecma_value_t *arguments_list_p, /**<
 
   ecma_deref_object (prototype_obj_p);
 
-  if (arguments_list_len == 0)
+  if (unlikely(arguments_list_len == 0))
   {
     ECMA_TRY_CATCH (parse_res_value,
                     ecma_builtin_date_now (ecma_make_object_value (obj_p)),
@@ -498,13 +498,13 @@ ecma_builtin_date_dispatch_construct (const ecma_value_t *arguments_list_p, /**<
 
     ECMA_FINALIZE (parse_res_value)
   }
-  else if (arguments_list_len == 1)
+  else if (likely(arguments_list_len == 1))
   {
     ECMA_TRY_CATCH (prim_comp_value,
                     ecma_op_to_primitive (arguments_list_p[0], ECMA_PREFERRED_TYPE_NUMBER),
                     ret_value);
 
-    if (ecma_is_value_string (prim_comp_value))
+    if (likely(ecma_is_value_string (prim_comp_value)))
     {
       ECMA_TRY_CATCH (parse_res_value,
                       ecma_builtin_date_parse (ecma_make_object_value (obj_p), prim_comp_value),
@@ -537,9 +537,9 @@ ecma_builtin_date_dispatch_construct (const ecma_value_t *arguments_list_p, /**<
     ECMA_FINALIZE (time_value);
   }
 
-  if (ecma_is_value_empty (ret_value))
+  if (likely(ecma_is_value_empty (ret_value)))
   {
-    if (!ecma_number_is_nan (prim_value_num) && ecma_number_is_infinity (prim_value_num))
+    if (unlikely(!ecma_number_is_nan (prim_value_num) && ecma_number_is_infinity (prim_value_num)))
     {
       prim_value_num = ecma_number_make_nan ();
     }
