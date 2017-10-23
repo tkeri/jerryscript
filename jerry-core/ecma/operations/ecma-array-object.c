@@ -66,7 +66,7 @@ ecma_op_create_array_object (const ecma_value_t *arguments_list_p, /**< list of 
     ecma_number_t num = ecma_get_number_from_value (arguments_list_p[0]);
     uint32_t num_uint32 = ecma_number_to_uint32 (num);
 
-    if (num != ((ecma_number_t) num_uint32))
+    if (likely(num != ((ecma_number_t) num_uint32)))
     {
       return ecma_raise_range_error (ECMA_ERR_MSG ("Invalid array length."));
     }
@@ -110,7 +110,7 @@ ecma_op_create_array_object (const ecma_value_t *arguments_list_p, /**< list of 
        index < array_items_count;
        index++)
   {
-    if (ecma_is_value_array_hole (array_items_p[index]))
+    if (unlikely(ecma_is_value_array_hole (array_items_p[index])))
     {
       continue;
     }
@@ -146,7 +146,7 @@ ecma_op_array_object_set_length (ecma_object_t *object_p, /**< the array object 
 
   ecma_value_t completion = ecma_op_to_number (new_value);
 
-  if (ECMA_IS_VALUE_ERROR (completion))
+  if (likely(ECMA_IS_VALUE_ERROR (completion)))
   {
     return completion;
   }
@@ -158,7 +158,7 @@ ecma_op_array_object_set_length (ecma_object_t *object_p, /**< the array object 
 
   ecma_free_value (completion);
 
-  if (ecma_is_value_object (new_value))
+  if (unlikely(ecma_is_value_object (new_value)))
   {
     ecma_value_t compared_num_val = ecma_op_to_number (new_value);
 
@@ -173,12 +173,12 @@ ecma_op_array_object_set_length (ecma_object_t *object_p, /**< the array object 
 
   uint32_t new_len_uint32 = ecma_number_to_uint32 (new_len_num);
 
-  if (((ecma_number_t) new_len_uint32) != new_len_num)
+  if (unlikely(((ecma_number_t) new_len_uint32) != new_len_num))
   {
     return ecma_raise_range_error (ECMA_ERR_MSG ("Invalid array length."));
   }
 
-  if (flags & ECMA_ARRAY_OBJECT_SET_LENGTH_FLAG_REJECT)
+  if (unlikely(flags & ECMA_ARRAY_OBJECT_SET_LENGTH_FLAG_REJECT))
   {
     return ecma_reject (is_throw);
   }
@@ -204,28 +204,28 @@ ecma_op_array_object_set_length (ecma_object_t *object_p, /**< the array object 
     }
     return ecma_make_simple_value (ECMA_SIMPLE_VALUE_TRUE);
   }
-  else if (!ecma_is_property_writable (ext_object_p->u.array.length_prop))
+  else if (unlikely(!ecma_is_property_writable (ext_object_p->u.array.length_prop)))
   {
     return ecma_reject (is_throw);
   }
 
   uint32_t current_len_uint32 = new_len_uint32;
 
-  if (new_len_uint32 < old_len_uint32)
+  if (unlikely(new_len_uint32 < old_len_uint32))
   {
     current_len_uint32 = ecma_delete_array_properties (object_p, new_len_uint32, old_len_uint32);
   }
 
   ext_object_p->u.array.length = current_len_uint32;
 
-  if ((flags & ECMA_ARRAY_OBJECT_SET_LENGTH_FLAG_WRITABLE_DEFINED)
-      && !(flags & ECMA_ARRAY_OBJECT_SET_LENGTH_FLAG_WRITABLE))
+  if (unlikely((flags & ECMA_ARRAY_OBJECT_SET_LENGTH_FLAG_WRITABLE_DEFINED)
+      && !(flags & ECMA_ARRAY_OBJECT_SET_LENGTH_FLAG_WRITABLE)))
   {
     uint8_t new_prop_value = (uint8_t) (ext_object_p->u.array.length_prop & ~ECMA_PROPERTY_FLAG_WRITABLE);
     ext_object_p->u.array.length_prop = new_prop_value;
   }
 
-  if (current_len_uint32 == new_len_uint32)
+  if (likely(current_len_uint32 == new_len_uint32))
   {
     return ecma_make_simple_value (ECMA_SIMPLE_VALUE_TRUE);
   }
@@ -256,31 +256,31 @@ ecma_op_array_object_define_own_property (ecma_object_t *object_p, /**< the arra
 
     uint32_t flags = 0;
 
-    if (is_throw)
+    if (likely(is_throw))
     {
       flags |= ECMA_ARRAY_OBJECT_SET_LENGTH_FLAG_IS_THROW;
     }
 
     /* Only the writable and data properties can be modified. */
-    if (property_desc_p->is_configurable
+    if (unlikely(property_desc_p->is_configurable
         || property_desc_p->is_enumerable
         || property_desc_p->is_get_defined
-        || property_desc_p->is_set_defined)
+        || property_desc_p->is_set_defined))
     {
       flags |= ECMA_ARRAY_OBJECT_SET_LENGTH_FLAG_REJECT;
     }
 
-    if (property_desc_p->is_writable_defined)
+    if (unlikely(property_desc_p->is_writable_defined))
     {
       flags |= ECMA_ARRAY_OBJECT_SET_LENGTH_FLAG_WRITABLE_DEFINED;
     }
 
-    if (property_desc_p->is_writable)
+    if (unlikely(property_desc_p->is_writable))
     {
       flags |= ECMA_ARRAY_OBJECT_SET_LENGTH_FLAG_WRITABLE;
     }
 
-    if (property_desc_p->is_value_defined)
+    if (likely(property_desc_p->is_value_defined))
     {
       return ecma_op_array_object_set_length (object_p, property_desc_p->value, flags);
     }
@@ -305,7 +305,7 @@ ecma_op_array_object_define_own_property (ecma_object_t *object_p, /**< the arra
 
   bool update_length = (index >= ext_object_p->u.array.length);
 
-  if (update_length && !ecma_is_property_writable (ext_object_p->u.array.length_prop))
+  if (unlikely(update_length && !ecma_is_property_writable (ext_object_p->u.array.length_prop)))
   {
     return ecma_reject (is_throw);
   }
@@ -316,7 +316,7 @@ ecma_op_array_object_define_own_property (ecma_object_t *object_p, /**< the arra
                                                                           false);
   JERRY_ASSERT (ecma_is_value_boolean (completition));
 
-  if (ecma_is_value_false (completition))
+  if (unlikely(ecma_is_value_false (completition)))
   {
     return ecma_reject (is_throw);
   }
