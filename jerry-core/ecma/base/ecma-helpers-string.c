@@ -105,14 +105,14 @@ ecma_string_to_array_index (const lit_utf8_byte_t *string_p, /**< utf-8 string *
   uint32_t index = 0;
   const lit_utf8_byte_t *string_end_p = string_p + string_size;
 
-  if (string_size == ECMA_MAX_CHARS_IN_STRINGIFIED_UINT32)
+  if (unlikely(string_size == ECMA_MAX_CHARS_IN_STRINGIFIED_UINT32))
   {
     string_end_p--;
   }
 
   do
   {
-    if (*string_p > LIT_CHAR_9 || *string_p < LIT_CHAR_0)
+    if (unlikely(*string_p > LIT_CHAR_9 || *string_p < LIT_CHAR_0))
     {
       return false;
     }
@@ -121,7 +121,7 @@ ecma_string_to_array_index (const lit_utf8_byte_t *string_p, /**< utf-8 string *
   }
   while (string_p < string_end_p);
 
-  if (string_size < ECMA_MAX_CHARS_IN_STRINGIFIED_UINT32)
+  if (likely(string_size < ECMA_MAX_CHARS_IN_STRINGIFIED_UINT32))
   {
     *result_p = index;
     return true;
@@ -162,17 +162,17 @@ ecma_new_ecma_string_from_utf8 (const lit_utf8_byte_t *string_p, /**< utf-8 stri
 
   JERRY_ASSERT (string_size > 0);
 
-  if (*string_p >= LIT_CHAR_0 && *string_p <= LIT_CHAR_9)
+  if (unlikely(*string_p >= LIT_CHAR_0 && *string_p <= LIT_CHAR_9))
   {
     uint32_t array_index;
 
-    if (ecma_string_to_array_index (string_p, string_size, &array_index))
+    if (likely(ecma_string_to_array_index (string_p, string_size, &array_index)))
     {
       return ecma_new_ecma_string_from_uint32 (array_index);
     }
   }
 
-  if (lit_get_magic_string_ex_count () > 0)
+  if (unlikely(lit_get_magic_string_ex_count () > 0))
   {
     lit_magic_string_ex_id_t magic_string_ex_id = lit_is_ex_utf8_string_magic (string_p, string_size);
 
@@ -413,7 +413,7 @@ ecma_new_ecma_string_from_number (ecma_number_t num) /**< ecma-number */
     return ecma_get_magic_string (LIT_MAGIC_STRING_NAN);
   }
 
-  if (ecma_number_is_infinity (num))
+  if (unlikely(ecma_number_is_infinity (num)))
   {
     lit_magic_string_id_t id = (ecma_number_is_negative (num) ? LIT_MAGIC_STRING_NEGATIVE_INFINITY_UL
                                                               : LIT_MAGIC_STRING_INFINITY_UL);
@@ -500,7 +500,7 @@ ecma_concat_ecma_strings (ecma_string_t *string1_p, /**< first ecma-string */
   JERRY_ASSERT (string1_p != NULL
                 && string2_p != NULL);
 
-  if (ecma_string_is_empty (string1_p))
+  if (unlikely(ecma_string_is_empty (string1_p)))
   {
     ecma_ref_ecma_string (string2_p);
     return string2_p;
@@ -623,7 +623,7 @@ ecma_concat_ecma_strings (ecma_string_t *string1_p, /**< first ecma-string */
   lit_utf8_size_t new_size = utf8_string1_size + utf8_string2_size;
 
   /* It is impossible to allocate this large string. */
-  if (new_size < (utf8_string1_size | utf8_string2_size))
+  if (unlikely(new_size < (utf8_string1_size | utf8_string2_size)))
   {
     jerry_fatal (ERR_OUT_OF_MEMORY);
   }
@@ -634,12 +634,12 @@ ecma_concat_ecma_strings (ecma_string_t *string1_p, /**< first ecma-string */
                                                    utf8_string2_p,
                                                    utf8_string2_size);
 
-  if (magic_string_id != LIT_MAGIC_STRING__COUNT)
+  if (unlikely(magic_string_id != LIT_MAGIC_STRING__COUNT))
   {
     return ecma_get_magic_string (magic_string_id);
   }
 
-  if (string1_is_uint32 && new_size <= ECMA_MAX_CHARS_IN_STRINGIFIED_UINT32)
+  if (unlikely(string1_is_uint32 && new_size <= ECMA_MAX_CHARS_IN_STRINGIFIED_UINT32))
   {
     memcpy (uint32_to_string_buffer1 + utf8_string1_size,
             utf8_string2_p,
@@ -653,7 +653,7 @@ ecma_concat_ecma_strings (ecma_string_t *string1_p, /**< first ecma-string */
     }
   }
 
-  if (lit_get_magic_string_ex_count () > 0)
+  if (unlikely(lit_get_magic_string_ex_count () > 0))
   {
     lit_magic_string_ex_id_t magic_string_ex_id;
     magic_string_ex_id = lit_is_ex_utf8_string_pair_magic (utf8_string1_p,
@@ -697,7 +697,7 @@ ecma_concat_ecma_strings (ecma_string_t *string1_p, /**< first ecma-string */
 
   lit_string_hash_t hash_start = string1_p->hash;
 
-  if (string1_rehash_needed)
+  if (unlikely(string1_rehash_needed))
   {
     hash_start = lit_utf8_string_calc_hash (utf8_string1_p, utf8_string1_size);
   }
@@ -820,7 +820,7 @@ ecma_string_to_number (const ecma_string_t *str_p) /**< ecma-string */
 
       ECMA_STRING_TO_UTF8_STRING (str_p, str_buffer_p, str_buffer_size);
 
-      if (str_buffer_size == 0)
+      if (unlikely(str_buffer_size == 0))
       {
         return ECMA_NUMBER_ZERO;
       }
@@ -1398,7 +1398,7 @@ ecma_string_to_property_name (ecma_string_t *prop_name_p, /**< property name */
 
 #else /* !JERRY_CPOINTER_32_BIT */
 
-      if (prop_name_p->u.common_uint32_field < (UINT16_MAX + 1))
+      if (likely(prop_name_p->u.common_uint32_field < (UINT16_MAX + 1)))
       {
         *name_type_p = (ecma_property_t) (container << ECMA_PROPERTY_NAME_TYPE_SHIFT);
         return (jmem_cpointer_t) prop_name_p->u.common_uint32_field;
@@ -1567,7 +1567,7 @@ ecma_compare_ecma_strings_longpath (const ecma_string_t *string1_p, /* ecma-stri
   const lit_utf8_byte_t *utf8_string1_p, *utf8_string2_p;
   lit_utf8_size_t utf8_string1_size, utf8_string2_size;
 
-  if (ECMA_STRING_GET_CONTAINER (string1_p) == ECMA_STRING_CONTAINER_HEAP_UTF8_STRING)
+  if (likely(ECMA_STRING_GET_CONTAINER (string1_p) == ECMA_STRING_CONTAINER_HEAP_UTF8_STRING))
   {
     utf8_string1_p = (lit_utf8_byte_t *) (string1_p + 1);
     utf8_string1_size = string1_p->u.utf8_string.size;
@@ -1584,7 +1584,7 @@ ecma_compare_ecma_strings_longpath (const ecma_string_t *string1_p, /* ecma-stri
     utf8_string2_size = string2_p->u.long_utf8_string_size;
   }
 
-  if (utf8_string1_size != utf8_string2_size)
+  if (unlikely(utf8_string1_size != utf8_string2_size))
   {
     return false;
   }
@@ -1605,19 +1605,19 @@ ecma_compare_ecma_strings (const ecma_string_t *string1_p, /* ecma-string */
   JERRY_ASSERT (string1_p != NULL && string2_p != NULL);
 
   /* Fast paths first. */
-  if (string1_p == string2_p)
+  if (unlikely(string1_p == string2_p))
   {
     return true;
   }
 
-  if (string1_p->hash != string2_p->hash)
+  if (likely(string1_p->hash != string2_p->hash))
   {
     return false;
   }
 
   ecma_string_container_t string1_container = ECMA_STRING_GET_CONTAINER (string1_p);
 
-  if (string1_container != ECMA_STRING_GET_CONTAINER (string2_p))
+  if (unlikely(string1_container != ECMA_STRING_GET_CONTAINER (string2_p)))
   {
     return false;
   }
@@ -1925,9 +1925,9 @@ ecma_string_get_char_at_pos (const ecma_string_t *string_p, /**< ecma-string */
   bool is_ascii;
   const lit_utf8_byte_t *chars_p = ecma_string_raw_chars (string_p, &buffer_size, &is_ascii);
 
-  if (chars_p != NULL)
+  if (likely(chars_p != NULL))
   {
-    if (is_ascii)
+    if (likely(is_ascii))
     {
       return chars_p[index];
     }
@@ -1984,7 +1984,7 @@ ecma_get_magic_string_ex (lit_magic_string_ex_id_t id) /**< external magic strin
 lit_magic_string_id_t
 ecma_get_string_magic (const ecma_string_t *string_p) /**< ecma-string */
 {
-  if (ECMA_STRING_GET_CONTAINER (string_p) == ECMA_STRING_CONTAINER_MAGIC_STRING)
+  if (unlikely(ECMA_STRING_GET_CONTAINER (string_p) == ECMA_STRING_CONTAINER_MAGIC_STRING))
   {
     return (lit_magic_string_id_t) string_p->u.magic_string_id;
   }
@@ -2017,7 +2017,7 @@ ecma_string_substr (const ecma_string_t *string_p, /**< pointer to an ecma strin
   JERRY_ASSERT (start_pos <= string_length);
   JERRY_ASSERT (end_pos <= string_length);
 
-  if (start_pos >= end_pos)
+  if (unlikely(start_pos >= end_pos))
   {
     return ecma_get_magic_string (LIT_MAGIC_STRING__EMPTY);
   }
@@ -2027,7 +2027,7 @@ ecma_string_substr (const ecma_string_t *string_p, /**< pointer to an ecma strin
 
   ECMA_STRING_TO_UTF8_STRING (string_p, start_p, buffer_size);
 
-  if (string_length == buffer_size)
+  if (likely(string_length == buffer_size))
   {
     ecma_string_p = ecma_new_ecma_string_from_utf8 (start_p + start_pos,
                                                     (lit_utf8_size_t) end_pos);
