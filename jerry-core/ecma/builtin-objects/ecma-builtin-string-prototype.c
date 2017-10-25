@@ -65,15 +65,15 @@
 static ecma_value_t
 ecma_builtin_string_prototype_object_to_string (ecma_value_t this_arg) /**< this argument */
 {
-  if (ecma_is_value_string (this_arg))
+  if (unlikely(ecma_is_value_string (this_arg)))
   {
     return ecma_copy_value (this_arg);
   }
-  else if (ecma_is_value_object (this_arg))
+  else if (likely(ecma_is_value_object (this_arg)))
   {
     ecma_object_t *object_p = ecma_get_object_from_value (this_arg);
 
-    if (ecma_object_class_is (object_p, LIT_MAGIC_STRING_STRING_UL))
+    if (likely(ecma_object_class_is (object_p, LIT_MAGIC_STRING_STRING_UL)))
     {
       ecma_extended_object_t *ext_object_p = (ecma_extended_object_t *) object_p;
 
@@ -191,7 +191,7 @@ ecma_builtin_string_prototype_object_char_code_at (ecma_value_t this_arg, /**< t
 
   /* 5 */
   // When index_num is NaN, then the first two comparisons are false
-  if (index_num < 0 || index_num >= len || (ecma_number_is_nan (index_num) && !len))
+  if (unlikely(index_num < 0 || index_num >= len || (ecma_number_is_nan (index_num) && !len)))
   {
     ret_value = ecma_make_nan_value ();
   }
@@ -677,7 +677,7 @@ ecma_builtin_string_prototype_object_replace_match (ecma_builtin_replace_search_
   context_p->match_start = 0;
   context_p->match_end = 0;
 
-  if (context_p->is_regexp)
+  if (likely(context_p->is_regexp))
   {
     ECMA_TRY_CATCH (match_value,
                     ecma_regexp_exec_helper (context_p->regexp_or_search_string,
@@ -789,7 +789,7 @@ ecma_builtin_string_prototype_object_replace_get_string (ecma_builtin_replace_se
   JERRY_ASSERT ((ecma_length_t) ecma_number_to_uint32 (match_length_number) == match_length);
   JERRY_ASSERT (match_length >= 1);
 
-  if (context_p->is_replace_callable)
+  if (likely(context_p->is_replace_callable))
   {
     JMEM_DEFINE_LOCAL_ARRAY (arguments_list,
                              match_length + 2,
@@ -815,7 +815,7 @@ ecma_builtin_string_prototype_object_replace_get_string (ecma_builtin_replace_se
       ecma_deref_ecma_string (index_p);
     }
 
-    if (ecma_is_value_empty (ret_value))
+    if (likely(ecma_is_value_empty (ret_value)))
     {
       arguments_list[match_length] = ecma_make_uint32_value (context_p->match_start);
       arguments_list[match_length + 1] = ecma_copy_value (context_p->input_string);
@@ -1101,9 +1101,9 @@ ecma_builtin_string_prototype_object_replace_loop (ecma_builtin_replace_search_c
 
       previous_start = context_p->match_end;
 
-      if (context_p->is_global
+      if (unlikely(context_p->is_global
           && ecma_is_value_empty (ret_value)
-          && context_p->match_start == context_p->match_end)
+          && context_p->match_start == context_p->match_end))
       {
         JERRY_ASSERT (context_p->is_regexp);
 
@@ -1130,7 +1130,7 @@ ecma_builtin_string_prototype_object_replace_loop (ecma_builtin_replace_search_c
       }
     }
 
-    if (ecma_is_value_empty (ret_value))
+    if (likely(ecma_is_value_empty (ret_value)))
     {
       if (!context_p->is_global || ecma_is_value_null (match_value))
       {
@@ -1255,8 +1255,8 @@ ecma_builtin_string_prototype_object_replace (ecma_value_t this_arg, /**< this a
 
   ecma_builtin_replace_search_ctx_t context;
 
-  if (ecma_is_value_object (search_value)
-      && ecma_object_class_is (ecma_get_object_from_value (search_value), LIT_MAGIC_STRING_REGEXP_UL))
+  if (likely(ecma_is_value_object (search_value)
+      && ecma_object_class_is (ecma_get_object_from_value (search_value), LIT_MAGIC_STRING_REGEXP_UL)))
   {
     ecma_object_t *regexp_obj_p = ecma_get_object_from_value (search_value);
     ecma_string_t *global_string_p = ecma_get_magic_string (LIT_MAGIC_STRING_GLOBAL);
@@ -1273,7 +1273,7 @@ ecma_builtin_string_prototype_object_replace (ecma_value_t this_arg, /**< this a
     context.input_length = ecma_string_get_length (ecma_get_string_from_value (to_string_value));
     context.regexp_or_search_string = search_value;
 
-    if (context.is_global)
+    if (unlikely(context.is_global))
     {
       ecma_string_t *last_index_string_p = ecma_get_magic_string (LIT_MAGIC_STRING_LASTINDEX_UL);
 
@@ -1288,7 +1288,7 @@ ecma_builtin_string_prototype_object_replace (ecma_value_t this_arg, /**< this a
       ecma_deref_ecma_string (last_index_string_p);
     }
 
-    if (ecma_is_value_empty (ret_value))
+    if (likely(ecma_is_value_empty (ret_value)))
     {
       ret_value = ecma_builtin_string_prototype_object_replace_main (&context, replace_value);
     }
@@ -1518,7 +1518,7 @@ ecma_builtin_string_prototype_object_split (ecma_value_t this_arg, /**< this arg
   /* 5. */
   ecma_length_t limit = 0;
 
-  if (ecma_is_value_undefined (arg2))
+  if (likely(ecma_is_value_undefined (arg2)))
   {
     limit = (uint32_t) -1;
   }
@@ -1531,13 +1531,13 @@ ecma_builtin_string_prototype_object_split (ecma_value_t this_arg, /**< this arg
     ECMA_OP_TO_NUMBER_FINALIZE (limit_num);
   }
 
-  if (ecma_is_value_empty (ret_value) && limit != 0)
+  if (likely(ecma_is_value_empty (ret_value) && limit != 0))
   {
 
     ecma_object_t *new_array_p = ecma_get_object_from_value (new_array);
 
     /* 10. */
-    if (ecma_is_value_undefined (arg1))
+    if (unlikely(ecma_is_value_undefined (arg1)))
     {
       ecma_string_t *zero_str_p = ecma_new_ecma_string_from_number (ECMA_NUMBER_ZERO);
 
@@ -1560,8 +1560,8 @@ ecma_builtin_string_prototype_object_split (ecma_value_t this_arg, /**< this arg
 
       bool separator_is_regexp = false;
 
-      if (ecma_is_value_object (arg1)
-          && ecma_object_class_is (ecma_get_object_from_value (arg1), LIT_MAGIC_STRING_REGEXP_UL))
+      if (unlikely(ecma_is_value_object (arg1)
+          && ecma_object_class_is (ecma_get_object_from_value (arg1), LIT_MAGIC_STRING_REGEXP_UL)))
       {
         separator_is_regexp = true;
         separator = ecma_copy_value (arg1);
@@ -1580,7 +1580,7 @@ ecma_builtin_string_prototype_object_split (ecma_value_t this_arg, /**< this arg
       const ecma_string_t *this_to_string_p = ecma_get_string_from_value (this_to_string_val);
 
       /* 11. */
-      if (ecma_string_is_empty (this_to_string_p) && ecma_is_value_empty (ret_value))
+      if (unlikely(ecma_string_is_empty (this_to_string_p) && ecma_is_value_empty (ret_value)))
       {
         bool should_return = false;
 
@@ -1647,7 +1647,7 @@ ecma_builtin_string_prototype_object_split (ecma_value_t this_arg, /**< this arg
         {
           ecma_value_t match_result = ecma_make_simple_value (ECMA_SIMPLE_VALUE_NULL);
 
-          if (separator_is_regexp)
+          if (unlikely(separator_is_regexp))
           {
 #ifndef CONFIG_DISABLE_REGEXP_BUILTIN
             ecma_value_t regexp_value = ecma_copy_value_if_not_object (separator);
@@ -1663,7 +1663,7 @@ ecma_builtin_string_prototype_object_split (ecma_value_t this_arg, /**< this arg
             ecma_string_t *separator_str_p = ecma_get_string_from_value (separator);
             ecma_length_t separator_length = ecma_string_get_length (separator_str_p);
 
-            if (curr_pos + separator_length <= string_length)
+            if (likely(curr_pos + separator_length <= string_length))
             {
               bool is_different = false;
               for (ecma_length_t i = 0; i < separator_length && !is_different; i++)
@@ -1693,7 +1693,7 @@ ecma_builtin_string_prototype_object_split (ecma_value_t this_arg, /**< this arg
             ecma_property_value_t *index_prop_value_p;
 
 
-            if (separator_is_regexp)
+            if (unlikely(separator_is_regexp))
             {
               index_prop_value_p = ecma_get_named_data_property (match_obj_p, magic_index_str_p);
               ecma_number_t index_num = ecma_get_number_from_value (index_prop_value_p->value);
@@ -1743,7 +1743,7 @@ ecma_builtin_string_prototype_object_split (ecma_value_t this_arg, /**< this arg
 
             uint32_t end_pos = ecma_number_to_uint32 (index_num);
 
-            if (separator_is_empty)
+            if (likely(separator_is_empty))
             {
               end_pos = curr_pos + 1;
             }
@@ -1769,7 +1769,7 @@ ecma_builtin_string_prototype_object_split (ecma_value_t this_arg, /**< this arg
             new_array_length++;
 
             /* 13.c.iii.4 */
-            if (new_array_length == limit && ecma_is_value_empty (ret_value))
+            if (unlikely(new_array_length == limit && ecma_is_value_empty (ret_value)))
             {
               should_return = true;
             }
@@ -1841,7 +1841,7 @@ ecma_builtin_string_prototype_object_split (ecma_value_t this_arg, /**< this arg
 
         }
 
-        if (!should_return && !separator_is_empty && ecma_is_value_empty (ret_value))
+        if (unlikely(!should_return && !separator_is_empty && ecma_is_value_empty (ret_value)))
         {
           /* 14. */
           ecma_string_t *substr_str_p;
@@ -1871,7 +1871,7 @@ ecma_builtin_string_prototype_object_split (ecma_value_t this_arg, /**< this arg
     }
   }
 
-  if (ecma_is_value_empty (ret_value))
+  if (likely(ecma_is_value_empty (ret_value)))
   {
     ret_value = new_array;
   }
@@ -1942,7 +1942,7 @@ ecma_builtin_string_prototype_object_substring (ecma_value_t this_arg, /**< this
     ECMA_OP_TO_NUMBER_FINALIZE (end_num);
   }
 
-  if (ecma_is_value_empty (ret_value))
+  if (likely(ecma_is_value_empty (ret_value)))
   {
     JERRY_ASSERT (start <= len && end <= len);
 
