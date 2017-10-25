@@ -62,7 +62,7 @@ ecma_builtin_string_object_from_char_code (ecma_value_t this_arg, /**< 'this' ar
   ecma_value_t ret_value = ecma_make_simple_value (ECMA_SIMPLE_VALUE_EMPTY);
   ecma_string_t *ret_string_p = NULL;
 
-  if (args_number == 0)
+  if (unlikely(args_number == 0))
   {
     ret_string_p = ecma_get_magic_string (LIT_MAGIC_STRING__EMPTY);
   }
@@ -92,7 +92,7 @@ ecma_builtin_string_object_from_char_code (ecma_value_t this_arg, /**< 'this' ar
       ECMA_OP_TO_NUMBER_FINALIZE (arg_num);
     }
 
-    if (ecma_is_value_empty (ret_value))
+    if (likely(ecma_is_value_empty (ret_value)))
     {
       ret_string_p = ecma_new_ecma_string_from_utf8 (utf8_buf_p, utf8_buf_used);
     }
@@ -100,7 +100,7 @@ ecma_builtin_string_object_from_char_code (ecma_value_t this_arg, /**< 'this' ar
     JMEM_FINALIZE_LOCAL_ARRAY (utf8_buf_p);
   }
 
-  if (ecma_is_value_empty (ret_value))
+  if (likely(ecma_is_value_empty (ret_value)))
   {
     ret_value = ecma_make_string_value (ret_string_p);
   }
@@ -121,7 +121,7 @@ ecma_builtin_string_dispatch_call (const ecma_value_t *arguments_list_p, /**< ar
 
   ecma_value_t ret_value = ecma_make_simple_value (ECMA_SIMPLE_VALUE_EMPTY);
 
-  if (arguments_list_len == 0)
+  if (unlikely(arguments_list_len == 0))
   {
     ecma_string_t *str_p = ecma_new_ecma_string_from_magic_string_id (LIT_MAGIC_STRING__EMPTY);
     ecma_value_t str_value = ecma_make_string_value (str_p);
