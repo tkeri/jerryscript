@@ -185,7 +185,7 @@ ecma_new_ecma_string_from_utf8 (const lit_utf8_byte_t *string_p, /**< utf-8 stri
   ecma_string_t *string_desc_p;
   lit_utf8_byte_t *data_p;
 
-  if (likely (string_size <= UINT16_MAX))
+  if (string_size <= UINT16_MAX)
   {
     string_desc_p = ecma_alloc_string_buffer (sizeof (ecma_string_t) + string_size);
 
@@ -273,7 +273,7 @@ ecma_new_ecma_string_from_utf8_converted_to_cesu8 (const lit_utf8_byte_t *string
 
     lit_utf8_byte_t *data_p;
 
-    if (likely (converted_string_size <= UINT16_MAX))
+    if (converted_string_size <= UINT16_MAX)
     {
       string_desc_p = ecma_alloc_string_buffer (sizeof (ecma_string_t) + converted_string_size);
 
@@ -670,7 +670,7 @@ ecma_concat_ecma_strings (ecma_string_t *string1_p, /**< first ecma-string */
   ecma_string_t *string_desc_p;
   lit_utf8_byte_t *data_p;
 
-  if (likely (new_size <= UINT16_MAX))
+  if (new_size <= UINT16_MAX)
   {
     string_desc_p = ecma_alloc_string_buffer (sizeof (ecma_string_t) + new_size);
 
@@ -718,7 +718,7 @@ ecma_ref_ecma_string (ecma_string_t *string_p) /**< string descriptor */
   JERRY_ASSERT (string_p != NULL);
   JERRY_ASSERT (string_p->refs_and_container >= ECMA_STRING_REF_ONE);
 
-  if (likely (string_p->refs_and_container < ECMA_STRING_MAX_REF))
+  if (string_p->refs_and_container < ECMA_STRING_MAX_REF)
   {
     /* Increase reference counter. */
     string_p->refs_and_container = (uint16_t) (string_p->refs_and_container + ECMA_STRING_REF_ONE);

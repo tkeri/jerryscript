@@ -124,7 +124,7 @@ ecma_init_gc_info (ecma_object_t *object_p) /**< object */
 void
 ecma_ref_object (ecma_object_t *object_p) /**< object */
 {
-  if (likely (object_p->type_flags_refs < ECMA_OBJECT_MAX_REF))
+  if (object_p->type_flags_refs < ECMA_OBJECT_MAX_REF)
   {
     object_p->type_flags_refs = (uint16_t) (object_p->type_flags_refs + ECMA_OBJECT_REF_ONE);
   }
@@ -729,7 +729,7 @@ ecma_gc_run (jmem_free_unused_memory_severity_t severity) /**< gc severity */
     if (ecma_gc_is_object_visited (obj_iter_p))
     {
       /* Moving the object to list of marked objects. */
-      if (likely (obj_prev_p != NULL))
+      if (obj_prev_p != NULL)
       {
         obj_prev_p->gc_next_cp = obj_iter_p->gc_next_cp;
       }
@@ -779,7 +779,7 @@ ecma_gc_run (jmem_free_unused_memory_severity_t severity) /**< gc severity */
       if (ecma_gc_is_object_visited (obj_iter_p))
       {
         /* Moving the object to list of marked objects */
-        if (likely (obj_prev_p != NULL))
+        if (obj_prev_p != NULL)
         {
           obj_prev_p->gc_next_cp = obj_iter_p->gc_next_cp;
         }

@@ -360,7 +360,7 @@ ecma_number_get_fraction_and_exponent (ecma_number_t num, /**< ecma-number */
   uint64_t fraction = ecma_number_get_fraction_field (num);
   int32_t exponent;
 
-  if (unlikely (biased_exp == 0))
+  if (biased_exp == 0)
   {
     /* IEEE-754 2008, 3.4, d */
     if (ecma_number_is_zero (num))

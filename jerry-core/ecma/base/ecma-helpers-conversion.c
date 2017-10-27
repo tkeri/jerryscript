@@ -818,7 +818,7 @@ ecma_uint32_to_utf8_string (uint32_t value, /**< value to convert */
 
   lit_utf8_size_t bytes_copied = (lit_utf8_size_t) (out_buffer_p + buffer_size - buf_p);
 
-  if (likely (buf_p != out_buffer_p))
+  if (buf_p != out_buffer_p)
   {
     memmove (out_buffer_p, buf_p, bytes_copied);
   }

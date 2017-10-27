@@ -314,7 +314,7 @@ ecma_op_to_string (ecma_value_t value) /**< ecma value */
 {
   ecma_check_value_type_is_spec_defined (value);
 
-  if (unlikely (ecma_is_value_object (value)))
+  if (ecma_is_value_object (value))
   {
     ecma_value_t ret_value = ecma_make_simple_value (ECMA_SIMPLE_VALUE_EMPTY);
 

@@ -1364,7 +1364,7 @@ ecma_create_error_object_reference (ecma_object_t *object_p) /**< referenced obj
 void
 ecma_ref_error_reference (ecma_error_reference_t *error_ref_p) /**< error reference */
 {
-  if (likely (error_ref_p->refs < UINT32_MAX))
+  if (error_ref_p->refs < UINT32_MAX)
   {
     error_ref_p->refs++;
   }

@@ -106,7 +106,7 @@ ecma_builtin_get (ecma_builtin_id_t builtin_id) /**< id of built-in to check on 
 {
   JERRY_ASSERT (builtin_id < ECMA_BUILTIN_ID__COUNT);
 
-  if (unlikely (JERRY_CONTEXT (ecma_builtin_objects)[builtin_id] == NULL))
+  if (JERRY_CONTEXT (ecma_builtin_objects)[builtin_id] == NULL)
   {
     ecma_instantiate_builtin (builtin_id);
   }

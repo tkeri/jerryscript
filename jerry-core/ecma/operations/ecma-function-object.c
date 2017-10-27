@@ -338,7 +338,7 @@ ecma_op_function_call (ecma_object_t *func_obj_p, /**< Function object */
 
   if (ecma_get_object_type (func_obj_p) == ECMA_OBJECT_TYPE_FUNCTION)
   {
-    if (unlikely (ecma_get_object_is_builtin (func_obj_p)))
+    if (ecma_get_object_is_builtin (func_obj_p))
     {
       ret_value = ecma_builtin_dispatch_call (func_obj_p,
                                               this_arg_value,
@@ -469,7 +469,7 @@ ecma_op_function_call (ecma_object_t *func_obj_p, /**< Function object */
                                                        arguments_list_p,
                                                        arguments_list_len);
 
-    if (unlikely (ecma_is_value_error_reference (ret_value)))
+    if (ecma_is_value_error_reference (ret_value))
     {
       JERRY_CONTEXT (error_value) = ecma_clear_error_reference (ret_value);
       ret_value = ecma_make_simple_value (ECMA_SIMPLE_VALUE_ERROR);
@@ -647,8 +647,8 @@ ecma_op_function_construct (ecma_object_t *func_obj_p, /**< Function object */
 
   if (ecma_get_object_type (func_obj_p) == ECMA_OBJECT_TYPE_FUNCTION)
   {
-    if (unlikely (ecma_get_object_is_builtin (func_obj_p)
-                  && !ecma_builtin_function_is_routine (func_obj_p)))
+    if (ecma_get_object_is_builtin (func_obj_p)
+                  && !ecma_builtin_function_is_routine (func_obj_p))
     {
       ret_value = ecma_builtin_dispatch_construct (func_obj_p,
                                                    arguments_list_p,

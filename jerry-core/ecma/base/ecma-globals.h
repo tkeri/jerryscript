@@ -196,7 +196,7 @@ typedef int32_t ecma_integer_value_t;
  * Checks whether the error flag is set.
  */
 #define ECMA_IS_VALUE_ERROR(value) \
-  (unlikely ((value) == ecma_make_simple_value (ECMA_SIMPLE_VALUE_ERROR)))
+  ((value) == ecma_make_simple_value (ECMA_SIMPLE_VALUE_ERROR))
 
 /**
  * Representation for native external pointer

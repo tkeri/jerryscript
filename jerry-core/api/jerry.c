@@ -97,7 +97,7 @@ static const char * const wrong_args_msg_p = "wrong type of argument";
 static inline void __attr_always_inline___
 jerry_assert_api_available (void)
 {
-  if (unlikely (!JERRY_CONTEXT (jerry_api_available)))
+  if (!JERRY_CONTEXT (jerry_api_available))
   {
     /* Terminates the execution. */
     JERRY_UNREACHABLE ();
@@ -133,7 +133,7 @@ jerry_make_api_unavailable (void)
 static inline jerry_value_t __attr_always_inline___
 jerry_get_arg_value (jerry_value_t value) /**< return value */
 {
-  if (unlikely (ecma_is_value_error_reference (value)))
+  if (ecma_is_value_error_reference (value))
   {
     value = ecma_get_error_reference_from_value (value)->value;
   }
@@ -175,7 +175,7 @@ jerry_throw (jerry_value_t value) /**< return value */
 void
 jerry_init (jerry_init_flag_t flags) /**< combination of Jerry flags */
 {
-  if (unlikely (JERRY_CONTEXT (jerry_api_available)))
+  if (JERRY_CONTEXT (jerry_api_available))
   {
     /* This function cannot be called twice unless jerry_cleanup is called. */
     JERRY_UNREACHABLE ();
@@ -1010,7 +1010,7 @@ jerry_acquire_value (jerry_value_t value) /**< API value */
 {
   jerry_assert_api_available ();
 
-  if (unlikely (ecma_is_value_error_reference (value)))
+  if (ecma_is_value_error_reference (value))
   {
     ecma_ref_error_reference (ecma_get_error_reference_from_value (value));
     return value;
@@ -1027,7 +1027,7 @@ jerry_release_value (jerry_value_t value) /**< API value */
 {
   jerry_assert_api_available ();
 
-  if (unlikely (ecma_is_value_error_reference (value)))
+  if (ecma_is_value_error_reference (value))
   {
     ecma_deref_error_reference (ecma_get_error_reference_from_value (value));
     return;
