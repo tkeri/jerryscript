@@ -217,7 +217,7 @@ void jmem_run_free_unused_memory_callbacks (jmem_free_unused_memory_severity_t s
  * Get value of pointer from specified compressed pointer value
  */
 #define JMEM_CP_GET_POINTER(type, cp_value) \
-  (((unlikely ((cp_value) == JMEM_CP_NULL)) ? NULL : JMEM_CP_GET_NON_NULL_POINTER (type, cp_value)))
+  ((((cp_value) == JMEM_CP_NULL) ? NULL : JMEM_CP_GET_NON_NULL_POINTER (type, cp_value)))
 
 /**
  * Set value of non-null compressed pointer so that it will correspond
@@ -235,7 +235,7 @@ void jmem_run_free_unused_memory_callbacks (jmem_free_unused_memory_severity_t s
   { \
     void *ptr_value = (void *) non_compressed_pointer; \
     \
-    if (unlikely ((ptr_value) == NULL)) \
+    if ((ptr_value) == NULL) \
     { \
       (cp_value) = JMEM_CP_NULL; \
     } \

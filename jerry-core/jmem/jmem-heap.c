@@ -205,7 +205,7 @@ jmem_heap_alloc_block_internal (const size_t size)
 
   /* Fast path for 8 byte chunks, first region is guaranteed to be sufficient. */
   if (required_size == JMEM_ALIGNMENT
-      && likely (JERRY_HEAP_CONTEXT (first).next_offset != JMEM_HEAP_END_OF_LIST))
+      &&  (JERRY_HEAP_CONTEXT (first).next_offset != JMEM_HEAP_END_OF_LIST))
   {
     data_space_p = JMEM_HEAP_GET_ADDR_FROM_OFFSET (JERRY_HEAP_CONTEXT (first).next_offset);
     JERRY_ASSERT (jmem_is_heap_pointer (data_space_p));
@@ -235,7 +235,7 @@ jmem_heap_alloc_block_internal (const size_t size)
 
     VALGRIND_UNDEFINED_SPACE (data_space_p, sizeof (jmem_heap_free_t));
 
-    if (unlikely (data_space_p == JERRY_CONTEXT (jmem_heap_list_skip_p)))
+    if (data_space_p == JERRY_CONTEXT (jmem_heap_list_skip_p))
     {
       JERRY_CONTEXT (jmem_heap_list_skip_p) = JMEM_HEAP_GET_ADDR_FROM_OFFSET (JERRY_HEAP_CONTEXT (first).next_offset);
     }
@@ -309,7 +309,7 @@ jmem_heap_alloc_block_internal (const size_t size)
 
   VALGRIND_NOACCESS_SPACE (&JERRY_HEAP_CONTEXT (first), sizeof (jmem_heap_free_t));
 
-  if (unlikely (!data_space_p))
+  if (!data_space_p)
   {
     return NULL;
   }
@@ -341,7 +341,7 @@ jmem_heap_gc_and_alloc_block (const size_t size,      /**< required memory size 
                               bool ret_null_on_error) /**< indicates whether return null or terminate
                                                            with ERR_OUT_OF_MEMORY on out of memory */
 {
-  if (unlikely (size == 0))
+  if (size == 0)
   {
     return NULL;
   }
@@ -359,7 +359,7 @@ jmem_heap_gc_and_alloc_block (const size_t size,      /**< required memory size 
 
   void *data_space_p = jmem_heap_alloc_block_internal (size);
 
-  if (likely (data_space_p != NULL))
+  if (data_space_p != NULL)
   {
     VALGRIND_FREYA_MALLOCLIKE_SPACE (data_space_p, size);
     return data_space_p;
@@ -373,7 +373,7 @@ jmem_heap_gc_and_alloc_block (const size_t size,      /**< required memory size 
 
     data_space_p = jmem_heap_alloc_block_internal (size);
 
-    if (likely (data_space_p != NULL))
+    if (data_space_p != NULL)
     {
       VALGRIND_FREYA_MALLOCLIKE_SPACE (data_space_p, size);
       return data_space_p;
