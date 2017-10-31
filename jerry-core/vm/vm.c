@@ -94,7 +94,7 @@ vm_op_get_value (ecma_value_t object, /**< base object */
     }
   }
 
-  if (unlikely (ecma_is_value_undefined (object) || ecma_is_value_null (object)))
+  if (ecma_is_value_undefined (object) || ecma_is_value_null (object))
   {
 #ifdef JERRY_ENABLE_ERROR_MESSAGES
     ecma_value_t error_value = ecma_raise_standard_error_with_format (ECMA_ERROR_TYPE,
@@ -137,7 +137,7 @@ vm_op_set_value (ecma_value_t object, /**< base object */
                  ecma_value_t value, /**< ecma value */
                  bool is_strict) /**< strict mode */
 {
-  if (unlikely (!ecma_is_value_object (object)))
+  if  (!ecma_is_value_object (object))
   {
     ecma_value_t to_object = ecma_op_to_object (object);
     ecma_free_value (object);
@@ -539,7 +539,7 @@ opfunc_construct (vm_frame_ctx_t *frame_ctx_p) /**< frame context */
       ecma_string_t *value_p = JMEM_CP_GET_NON_NULL_POINTER (ecma_string_t, \
                                                              literal_start_p[literal_index]); \
       \
-      if (unlikely (ECMA_STRING_GET_CONTAINER (value_p) == ECMA_STRING_LITERAL_NUMBER)) \
+      if (ECMA_STRING_GET_CONTAINER (value_p) == ECMA_STRING_LITERAL_NUMBER) \
       { \
         (target_value) = ecma_fast_copy_value (value_p->u.lit_number); \
       } \
@@ -853,12 +853,12 @@ vm_loop (vm_frame_ctx_t *frame_ctx_p) /**< frame context */
 
         branch_offset = *(byte_code_p++);
 
-        if (unlikely (branch_offset_length != 1))
+        if (branch_offset_length != 1)
         {
           branch_offset <<= 8;
           branch_offset |= *(byte_code_p++);
 
-          if (unlikely (branch_offset_length == 3))
+          if (branch_offset_length == 3)
           {
             branch_offset <<= 8;
             branch_offset |= *(byte_code_p++);
@@ -2015,11 +2015,11 @@ vm_loop (vm_frame_ctx_t *frame_ctx_p) /**< frame context */
               {
                 branch_offset = *(byte_code_p++);
 
-                if (unlikely (branch_offset_length != 1))
+                if (branch_offset_length != 1)
                 {
                   branch_offset <<= 8;
                   branch_offset |= *(byte_code_p++);
-                  if (unlikely (branch_offset_length == 3))
+                  if (branch_offset_length == 3)
                   {
                     branch_offset <<= 8;
                     branch_offset |= *(byte_code_p++);
@@ -2486,7 +2486,7 @@ vm_loop (vm_frame_ctx_t *frame_ctx_p) /**< frame context */
 
         READ_LITERAL_INDEX (literal_index);
 
-        if (literal_index < register_end)
+        if (likely(literal_index < register_end))
         {
           ecma_fast_free_value (frame_ctx_p->registers_p[literal_index]);
 

@@ -83,9 +83,9 @@ jmem_pools_alloc (size_t size) /**< size of the chunk */
   jmem_run_free_unused_memory_callbacks (JMEM_FREE_UNUSED_MEMORY_SEVERITY_HIGH);
 #endif /* JMEM_GC_BEFORE_EACH_ALLOC */
 
-  if (size <= 8)
+  if (likely(size <= 8))
   {
-    if (JERRY_CONTEXT (jmem_free_8_byte_chunk_p) != NULL)
+    if (likely(JERRY_CONTEXT (jmem_free_8_byte_chunk_p) != NULL))
     {
       const jmem_pools_chunk_t *const chunk_p = JERRY_CONTEXT (jmem_free_8_byte_chunk_p);
 
@@ -141,7 +141,7 @@ jmem_pools_free (void *chunk_p, /**< pointer to the chunk */
 
   VALGRIND_DEFINED_SPACE (chunk_to_free_p, size);
 
-  if (size <= 8)
+  if (likely(size <= 8))
   {
     chunk_to_free_p->next_p = JERRY_CONTEXT (jmem_free_8_byte_chunk_p);
     JERRY_CONTEXT (jmem_free_8_byte_chunk_p) = chunk_to_free_p;

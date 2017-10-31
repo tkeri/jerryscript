@@ -50,7 +50,7 @@ do_number_bitwise_logic (number_bitwise_logic_op op, /**< number bitwise logic o
   JERRY_ASSERT (!ECMA_IS_VALUE_ERROR (left_value)
                 && !ECMA_IS_VALUE_ERROR (right_value));
 
-  if (ecma_are_values_integer_numbers (left_value, right_value))
+  if (likely(ecma_are_values_integer_numbers (left_value, right_value)))
   {
     switch (op)
     {
