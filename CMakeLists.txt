@@ -48,6 +48,8 @@ set(JERRY_LIBM              ON  CACHE BOOL "Build and use jerry-libm?")
 set(UNITTESTS               OFF CACHE BOOL "Build unit tests?")
 set(DOCTESTS                OFF CACHE BOOL "Build doc tests?")
 
+set(JERRY_LIBC OFF)
+
 # Optional build settings
 set(ENABLE_ALL_IN_ONE  OFF CACHE BOOL "Enable all-in-one build?")
 set(ENABLE_LTO         ON  CACHE BOOL "Enable LTO build?")
@@ -245,6 +247,8 @@ endif()
 if(DEFINED EXTERNAL_LINKER_FLAGS)
   jerry_add_link_flags(${EXTERNAL_LINKER_FLAGS})
 endif()
+
+  jerry_add_compile_flags(-O3 -fprofile-use)
 
 # Jerry's libc
 if(JERRY_LIBC)
